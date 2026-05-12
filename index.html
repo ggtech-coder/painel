@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GG TECH – Painel de Acesso Remoto</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0c10;
+    --surface:  #111520;
+    --card:     #161b28;
+    --border:   #1e2840;
+    --accent:   #00d4ff;
+    --accent2:  #0090cc;
+    --green:    #00ff88;
+    --yellow:   #ffd700;
+    --red:      #ff4466;
+    --text:     #c8d8e8;
+    --muted:    #5a6a7a;
+    --white:    #e8f0f8;
+    --glow:     0 0 18px rgba(0,212,255,.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,12,16,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 28px;
+    gap: 16px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 16px; color: #000;
+    box-shadow: var(--glow);
+  }
+
+  .logo-text { font-family: 'Rajdhani', sans-serif; }
+  .logo-text span:first-child { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+  .logo-text span:last-child  { display: block; font-size: 10px; color: var(--muted); letter-spacing: 3px; }
+
+  .header-right { display: flex; align-items: center; gap: 14px; }
+
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .user-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all .2s;
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: #000;
+    box-shadow: var(--glow);
+  }
+  .btn-accent:hover { background: #33ddff; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: #ff6680; }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+
+  .login-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 360px;
+    box-shadow: 0 0 60px rgba(0,212,255,.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 20%; right: 20%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .login-logo {
+    text-align: center; margin-bottom: 32px;
+  }
+  .login-logo .big { font-family: 'Rajdhani', sans-serif; font-size: 36px; font-weight: 700; color: var(--accent); letter-spacing: 4px; }
+  .login-logo .sub { font-size: 10px; color: var(--muted); letter-spacing: 4px; margin-top: 4px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; }
+
+  .field input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,.1); }
+
+  .login-error {
+    color: var(--red); font-size: 11px; text-align: center;
+    margin-bottom: 12px; min-height: 16px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  .page-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── UNIDADES ── */
+  .unit {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .unit:hover { box-shadow: 0 0 24px rgba(0,212,255,.08); }
+
+  .unit-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .2s;
+  }
+  .unit-header:hover { background: rgba(0,212,255,.04); }
+
+  .unit-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .unit-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px; font-weight: 600;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+
+  .unit-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .unit-count {
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px; color: var(--muted);
+  }
+
+  .chevron {
+    width: 18px; height: 18px; color: var(--muted);
+    transition: transform .3s;
+    flex-shrink: 0;
+  }
+  .unit.open .chevron { transform: rotate(180deg); }
+
+  .unit-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .unit.open .unit-body { display: block; }
+
+  /* ── COMPUTADORES ── */
+  .computers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .computer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    transition: all .2s;
+    position: relative;
+  }
+  .computer-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(0,212,255,.15);
+    transform: translateY(-2px);
+  }
+
+  .computer-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .computer-anydesk {
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .anydesk-id {
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .computer-info {
+    font-size: 10px; color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  .computer-info span { color: var(--text); }
+
+  .btn-connect {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 1px;
+    transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-connect:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: var(--glow); }
+
+  .btn-edit-id {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    padding: 3px 7px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-edit-id:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ── ADMIN PANEL ── */
+  .admin-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  .admin-bar-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--yellow);
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+
+  /* ── MODAIS ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    width: 420px;
+    max-width: 95vw;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,.6);
+  }
+
+  .modal-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--white);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .modal-close {
+    position: absolute; top: 14px; right: 16px;
+    background: transparent; border: none;
+    color: var(--muted); font-size: 20px; cursor: pointer;
+  }
+  .modal-close:hover { color: var(--white); }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* ── USERS TABLE ── */
+  .users-list { margin-top: 16px; }
+
+  .user-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  .user-role {
+    font-size: 10px; padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600; letter-spacing: 1px;
+  }
+  .role-admin { background: rgba(255,215,0,.15); color: var(--yellow); border: 1px solid rgba(255,215,0,.3); }
+  .role-tech  { background: rgba(0,212,255,.1);  color: var(--accent);  border: 1px solid rgba(0,212,255,.25); }
+
+  .user-actions { margin-left: auto; display: flex; gap: 6px; }
+
+  /* ADD COMPUTER FORM */
+  .add-computer-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 400;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 12px; color: var(--accent);
+    box-shadow: var(--glow);
+    opacity: 0; transform: translateY(10px);
+    transition: all .3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  .hidden { display: none !important; }
+
+  select {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 14px;
+    color: var(--white); font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; outline: none; width: 100%;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .section-label {
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 2px; margin: 16px 0 8px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="big">GG TECH</div>
+      <div class="sub">ACESSO REMOTO · PAINEL DE CONTROLE</div>
+    </div>
+    <div class="field">
+      <label>USUÁRIO</label>
+      <input type="text" id="loginUser" placeholder="seu.usuario" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>SENHA</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn btn-accent" style="width:100%;padding:12px;font-size:14px;letter-spacing:2px;" onclick="doLogin()">ENTRAR</button>
+  </div>
+</div>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">GG</div>
+    <div class="logo-text">
+      <span>GG TECH</span>
+      <span>GERENCIAMENTO DE ACESSO REMOTO</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="user-badge">
+      <div class="user-dot"></div>
+      <span id="headerUserLabel">–</span>
+    </div>
+    <button class="btn btn-ghost" onclick="doLogout()">SAIR</button>
+  </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main>
+
+  <!-- ADMIN BAR (só admin vê) -->
+  <div class="admin-bar hidden" id="adminBar">
+    <span class="admin-bar-title">⚡ ADMIN</span>
+    <button class="btn btn-accent" onclick="openModal('modalAddUnit')">+ Unidade</button>
+    <button class="btn btn-ghost" onclick="openModal('modalAddComputer')">+ Computador</button>
+    <button class="btn btn-ghost" onclick="openModal('modalUsers')">👥 Usuários</button>
+  </div>
+
+  <div class="page-title">UNIDADES DE SAÚDE</div>
+
+  <!-- UNIDADES CONTAINER -->
+  <div id="unitsContainer"></div>
+
+</main>
+
+<!-- ══════════════ MODAIS ══════════════ -->
+
+<!-- MODAL: Editar AnyDesk ID (técnico) -->
+<div class="modal-overlay" id="modalEditId">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalEditId')">✕</button>
+    <div class="modal-title">✏️ Editar ID AnyDesk</div>
+    <input type="hidden" id="editIdUnitKey">
+    <input type="hidden" id="editIdCompKey">
+    <div class="field">
+      <label>NOME DA MÁQUINA</label>
+      <input type="text" id="editIdMachine" disabled style="opacity:.5">
+    </div>
+    <div class="field">
+      <label>NOVO ID ANYDESK</label>
+      <input type="text" id="editIdValue" placeholder="ex: 123 456 789">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalEditId')">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveAnyDeskId()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Adicionar Unidade (admin) -->
+<div class="modal-overlay" id="modalAddUnit">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalAddUnit')">✕</button>
+    <div class="modal-title">🏥 Nova Unidade</div>
+    <div class="field"><label>NOME DA UNIDADE</label><input type="text" id="newUnitName" placeholder="ex: UPA Central"></div>
+    <div class="field"><label>DESCRIÇÃO (opcional)</label><input type="text" id="newUnitDesc" placeholder="ex: Unidade de Pronto Atendimento"></div>
+    <div class="field">
+      <label>ÍCONE</label>
+      <select id="newUnitIcon">
+        <option value="🏥">🏥 Hospital</option>
+        <option value="🚑">🚑 UPA</option>
+        <option value="🧠">🧠 PSI</option>
+        <option value="🏨">🏨 Policlínica</option>
+        <option value="💊">💊 Farmácia</option>
+        <option value="🖥️">🖥️ TI</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>COR</label>
+      <select id="newUnitColor">
+        <option value="#00d4ff">Azul Ciano</option>
+        <option value="#00ff88">Verde</option>
+        <option value="#ffd700">Amarelo</option>
+        <option value="#ff4466">Vermelho</option>
+        <option value="#a78bfa">Roxo</option>
+        <option value="#fb923c">Laranja</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddUnit')">Cancelar</button>
+      <button class="btn btn-accent" onclick="addUnit()">Criar Unidade</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Adicionar Computador (admin) -->
+<div class="modal-overlay" id="modalAddComputer">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalAddComputer')">✕</button>
+    <div class="modal-title">🖥️ Novo Computador</div>
+    <div class="field">
+      <label>UNIDADE</label>
+      <select id="newCompUnit"></select>
+    </div>
+    <div class="add-computer-grid">
+      <div class="field"><label>NOME DA MÁQUINA</label><input type="text" id="newCompName" placeholder="ex: TRIAGEM 01"></div>
+      <div class="field"><label>ID ANYDESK</label><input type="text" id="newCompAnydesk" placeholder="123 456 789"></div>
+      <div class="field"><label>IP (opcional)</label><input type="text" id="newCompIp" placeholder="192.168.1.10"></div>
+      <div class="field"><label>Nº SÉRIE (opcional)</label><input type="text" id="newCompSerial" placeholder="SN-XXXXXXX"></div>
+    </div>
+    <div class="field"><label>OBSERVAÇÃO (opcional)</label><input type="text" id="newCompObs" placeholder="ex: Desktop Dell, sala de triagem"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddComputer')">Cancelar</button>
+      <button class="btn btn-accent" onclick="addComputer()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Gerenciar Usuários (admin) -->
+<div class="modal-overlay" id="modalUsers">
+  <div class="modal" style="width:500px">
+    <button class="modal-close" onclick="closeModal('modalUsers')">✕</button>
+    <div class="modal-title">👥 Gerenciar Usuários</div>
+
+    <div class="section-label">Adicionar usuário</div>
+    <div class="add-computer-grid">
+      <div class="field"><label>USUÁRIO</label><input type="text" id="newUserName" placeholder="tecnico01"></div>
+      <div class="field"><label>SENHA</label><input type="password" id="newUserPass" placeholder="senha"></div>
+    </div>
+    <div class="field">
+      <label>PERFIL</label>
+      <select id="newUserRole">
+        <option value="tech">Técnico (edita apenas AnyDesk)</option>
+        <option value="admin">Admin (controle total)</option>
+      </select>
+    </div>
+    <button class="btn btn-accent" style="width:100%" onclick="addUser()">Adicionar Usuário</button>
+
+    <div class="section-label" style="margin-top:20px">Usuários cadastrados</div>
+    <div class="users-list" id="usersList"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalUsers')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DADOS PADRÃO
+// ══════════════════════════════════════════════════
+const DEFAULT_USERS = [
+  { username: 'admin', password: 'GGtech@2024', role: 'admin', label: 'ADMINISTRADOR' }
+];
+
+const DEFAULT_UNITS = [
+  {
+    key: 'upa_atalaia',
+    name: 'UPA ATALAIA',
+    desc: 'Unidade de Pronto Atendimento',
+    icon: '🚑',
+    color: '#00d4ff',
+    computers: [
+      { key: 'c1', name: 'TRIAGEM 01',     anydesk: '123 456 001', ip: '192.168.1.10', serial: 'SN-AT001', obs: 'Dell OptiPlex, triagem' },
+      { key: 'c2', name: 'TRIAGEM 02',     anydesk: '123 456 002', ip: '192.168.1.11', serial: 'SN-AT002', obs: '' },
+      { key: 'c3', name: 'RECEPÇÃO',       anydesk: '123 456 003', ip: '192.168.1.12', serial: 'SN-AT003', obs: 'Recepção principal' },
+      { key: 'c4', name: 'FARMÁCIA',       anydesk: '123 456 004', ip: '192.168.1.13', serial: 'SN-AT004', obs: '' },
+      { key: 'c5', name: 'MÉDICO 01',      anydesk: '123 456 005', ip: '192.168.1.14', serial: 'SN-AT005', obs: 'Consultório 1' },
+    ]
+  },
+  {
+    key: 'pq_sao_jorge',
+    name: 'PQ SÃO JORGE',
+    desc: 'Policlínica São Jorge',
+    icon: '🏥',
+    color: '#00ff88',
+    computers: [
+      { key: 'c1', name: 'RECEPÇÃO',       anydesk: '234 567 001', ip: '192.168.2.10', serial: 'SN-SJ001', obs: '' },
+      { key: 'c2', name: 'CONSULTÓRIO 01', anydesk: '234 567 002', ip: '192.168.2.11', serial: 'SN-SJ002', obs: '' },
+      { key: 'c3', name: 'CONSULTÓRIO 02', anydesk: '234 567 003', ip: '192.168.2.12', serial: 'SN-SJ003', obs: '' },
+    ]
+  },
+  {
+    key: 'psi',
+    name: 'PSI',
+    desc: 'Centro de Atenção Psicossocial',
+    icon: '🧠',
+    color: '#a78bfa',
+    computers: [
+      { key: 'c1', name: 'RECEPÇÃO',       anydesk: '345 678 001', ip: '192.168.3.10', serial: 'SN-PS001', obs: '' },
+      { key: 'c2', name: 'SALA TÉCNICA',   anydesk: '345 678 002', ip: '192.168.3.11', serial: 'SN-PS002', obs: '' },
+    ]
+  },
+  {
+    key: 'upa_caucaia',
+    name: 'UPA CAUCAIA',
+    desc: 'Unidade de Pronto Atendimento',
+    icon: '🚑',
+    color: '#fb923c',
+    computers: [
+      { key: 'c1', name: 'TRIAGEM 01',     anydesk: '456 789 001', ip: '192.168.4.10', serial: 'SN-CA001', obs: '' },
+      { key: 'c2', name: 'TRIAGEM 02',     anydesk: '456 789 002', ip: '192.168.4.11', serial: 'SN-CA002', obs: '' },
+      { key: 'c3', name: 'RECEPÇÃO',       anydesk: '456 789 003', ip: '192.168.4.12', serial: 'SN-CA003', obs: '' },
+      { key: 'c4', name: 'MÉDICO 01',      anydesk: '456 789 004', ip: '192.168.4.13', serial: 'SN-CA004', obs: '' },
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════
+//  STORAGE
+// ══════════════════════════════════════════════════
+function loadData() {
+  try {
+    const u = localStorage.getItem('ggtech_users');
+    const d = localStorage.getItem('ggtech_units');
+    return {
+      users: u ? JSON.parse(u) : [...DEFAULT_USERS],
+      units: d ? JSON.parse(d) : JSON.parse(JSON.stringify(DEFAULT_UNITS))
+    };
+  } catch { return { users: [...DEFAULT_USERS], units: JSON.parse(JSON.stringify(DEFAULT_UNITS)) }; }
+}
+
+function saveUsers(users) { localStorage.setItem('ggtech_users', JSON.stringify(users)); }
+function saveUnits(units) { localStorage.setItem('ggtech_units', JSON.stringify(units)); }
+
+// inicializa storage se vazio
+(function init() {
+  if (!localStorage.getItem('ggtech_users')) saveUsers([...DEFAULT_USERS]);
+  if (!localStorage.getItem('ggtech_units')) saveUnits(JSON.parse(JSON.stringify(DEFAULT_UNITS)));
+})();
+
+// ══════════════════════════════════════════════════
+//  SESSION
+// ══════════════════════════════════════════════════
+let currentUser = null;
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const { users } = loadData();
+  const found = users.find(x => x.username === u && x.password === p);
+  if (!found) {
+    document.getElementById('loginError').textContent = 'Usuário ou senha incorretos.';
+    return;
+  }
+  currentUser = found;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('headerUserLabel').textContent =
+    found.label || found.username.toUpperCase() + (found.role === 'admin' ? ' · ADMIN' : ' · TÉCNICO');
+  document.getElementById('adminBar').classList.toggle('hidden', found.role !== 'admin');
+  renderUnits();
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
+});
+
+// ══════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════
+function renderUnits() {
+  const { units } = loadData();
+  const container = document.getElementById('unitsContainer');
+  container.innerHTML = '';
+
+  units.forEach((unit, ui) => {
+    const div = document.createElement('div');
+    div.className = 'unit';
+    div.id = 'unit_' + unit.key;
+
+    const iconBg = unit.color + '22';
+    const computers = unit.computers || [];
+
+    div.innerHTML = `
+      <div class="unit-header" onclick="toggleUnit('${unit.key}')">
+        <div class="unit-icon" style="background:${iconBg};border:1px solid ${unit.color}44">${unit.icon}</div>
+        <div>
+          <div class="unit-name" style="color:${unit.color}">${unit.name}</div>
+          <div class="unit-meta">${unit.desc || ''}</div>
+        </div>
+        <div class="unit-count">${computers.length} máquina${computers.length !== 1 ? 's' : ''}</div>
+        ${currentUser?.role === 'admin' ? `<button class="btn btn-ghost" style="font-size:10px;padding:4px 10px;margin-right:4px" onclick="event.stopPropagation();deleteUnit('${unit.key}')">✕ Remover</button>` : ''}
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      <div class="unit-body">
+        <div class="computers-grid" id="grid_${unit.key}">
+          ${computers.map(c => renderComputer(unit.key, c)).join('')}
+          ${currentUser?.role === 'admin' ? `
+            <div class="computer-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:120px;opacity:.5"
+              onclick="openAddComputerFor('${unit.key}')">
+              <span style="font-size:28px">+</span>
+            </div>` : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function renderComputer(unitKey, c) {
+  const hasInfo = c.ip || c.serial;
+  return `
+    <div class="computer-card">
+      ${(currentUser?.role === 'admin' || currentUser?.role === 'tech') ? `
+        <button class="btn-edit-id" onclick="openEditId('${unitKey}','${c.key}')">✏️</button>` : ''}
+      <div class="computer-name">🖥️ ${c.name}</div>
+      <div class="computer-anydesk">
+        <span>AnyDesk:</span>
+        <span class="anydesk-id">${c.anydesk || '—'}</span>
+      </div>
+      ${hasInfo ? `<div class="computer-info">
+        ${c.ip     ? `IP: <span>${c.ip}</span><br>` : ''}
+        ${c.serial ? `S/N: <span>${c.serial}</span><br>` : ''}
+        ${c.obs    ? `<span style="color:#5a6a7a">${c.obs}</span>` : ''}
+      </div>` : (c.obs ? `<div class="computer-info"><span style="color:#5a6a7a">${c.obs}</span></div>` : '')}
+      <button class="btn-connect" onclick="connectAnyDesk('${c.anydesk}')">
+        ⚡ CONECTAR
+      </button>
+      ${currentUser?.role === 'admin' ? `
+        <button class="btn btn-danger" style="width:100%;margin-top:6px;font-size:11px;padding:5px"
+          onclick="deleteComputer('${unitKey}','${c.key}')">✕ Remover</button>` : ''}
+    </div>
+  `;
+}
+
+function toggleUnit(key) {
+  document.getElementById('unit_' + key)?.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════
+//  ANYDESK CONNECT
+// ══════════════════════════════════════════════════
+function connectAnyDesk(id) {
+  if (!id || id === '—') { showToast('ID AnyDesk não configurado!'); return; }
+  const clean = id.replace(/\s/g, '');
+  // tenta abrir o protocolo nativo do AnyDesk
+  const link = `anydesk:${clean}`;
+  window.location.href = link;
+  showToast(`Conectando ao AnyDesk ${id}…`);
+}
+
+// ══════════════════════════════════════════════════
+//  EDITAR ANYDESK ID
+// ══════════════════════════════════════════════════
+function openEditId(unitKey, compKey) {
+  const { units } = loadData();
+  const unit = units.find(u => u.key === unitKey);
+  const comp = unit?.computers.find(c => c.key === compKey);
+  if (!comp) return;
+  document.getElementById('editIdUnitKey').value = unitKey;
+  document.getElementById('editIdCompKey').value = compKey;
+  document.getElementById('editIdMachine').value = comp.name;
+  document.getElementById('editIdValue').value = comp.anydesk || '';
+  openModal('modalEditId');
+}
+
+function saveAnyDeskId() {
+  const unitKey = document.getElementById('editIdUnitKey').value;
+  const compKey = document.getElementById('editIdCompKey').value;
+  const newId   = document.getElementById('editIdValue').value.trim();
+  const data = loadData();
+  const unit = data.units.find(u => u.key === unitKey);
+  const comp = unit?.computers.find(c => c.key === compKey);
+  if (!comp) return;
+  comp.anydesk = newId;
+  saveUnits(data.units);
+  closeModal('modalEditId');
+  renderUnits();
+  showToast('ID AnyDesk atualizado!');
+}
+
+// ══════════════════════════════════════════════════
+//  ADD UNIT
+// ══════════════════════════════════════════════════
+function addUnit() {
+  const name  = document.getElementById('newUnitName').value.trim();
+  const desc  = document.getElementById('newUnitDesc').value.trim();
+  const icon  = document.getElementById('newUnitIcon').value;
+  const color = document.getElementById('newUnitColor').value;
+  if (!name) { showToast('Informe o nome da unidade!'); return; }
+  const data = loadData();
+  const key = 'unit_' + Date.now();
+  data.units.push({ key, name: name.toUpperCase(), desc, icon, color, computers: [] });
+  saveUnits(data.units);
+  closeModal('modalAddUnit');
+  renderUnits();
+  showToast('Unidade criada!');
+  document.getElementById('newUnitName').value = '';
+  document.getElementById('newUnitDesc').value = '';
+}
+
+function deleteUnit(key) {
+  if (!confirm('Remover esta unidade e todos os computadores?')) return;
+  const data = loadData();
+  data.units = data.units.filter(u => u.key !== key);
+  saveUnits(data.units);
+  renderUnits();
+  showToast('Unidade removida.');
+}
+
+// ══════════════════════════════════════════════════
+//  ADD COMPUTER
+// ══════════════════════════════════════════════════
+function populateUnitSelect() {
+  const { units } = loadData();
+  const sel = document.getElementById('newCompUnit');
+  sel.innerHTML = units.map(u => `<option value="${u.key}">${u.name}</option>`).join('');
+}
+
+function openAddComputerFor(unitKey) {
+  populateUnitSelect();
+  document.getElementById('newCompUnit').value = unitKey;
+  openModal('modalAddComputer');
+}
+
+function addComputer() {
+  const unitKey = document.getElementById('newCompUnit').value;
+  const name    = document.getElementById('newCompName').value.trim();
+  const anydesk = document.getElementById('newCompAnydesk').value.trim();
+  const ip      = document.getElementById('newCompIp').value.trim();
+  const serial  = document.getElementById('newCompSerial').value.trim();
+  const obs     = document.getElementById('newCompObs').value.trim();
+  if (!name) { showToast('Informe o nome da máquina!'); return; }
+  const data = loadData();
+  const unit = data.units.find(u => u.key === unitKey);
+  if (!unit) return;
+  unit.computers.push({ key: 'c' + Date.now(), name: name.toUpperCase(), anydesk, ip, serial, obs });
+  saveUnits(data.units);
+  closeModal('modalAddComputer');
+  renderUnits();
+  showToast('Computador adicionado!');
+  ['newCompName','newCompAnydesk','newCompIp','newCompSerial','newCompObs'].forEach(id => document.getElementById(id).value = '');
+}
+
+function deleteComputer(unitKey, compKey) {
+  if (!confirm('Remover este computador?')) return;
+  const data = loadData();
+  const unit = data.units.find(u => u.key === unitKey);
+  if (!unit) return;
+  unit.computers = unit.computers.filter(c => c.key !== compKey);
+  saveUnits(data.units);
+  renderUnits();
+  showToast('Computador removido.');
+}
+
+// ══════════════════════════════════════════════════
+//  USERS
+// ══════════════════════════════════════════════════
+function renderUsersList() {
+  const { users } = loadData();
+  const el = document.getElementById('usersList');
+  el.innerHTML = users.map(u => `
+    <div class="user-row">
+      <span style="color:var(--white);font-weight:600">${u.username}</span>
+      <span class="user-role ${u.role === 'admin' ? 'role-admin' : 'role-tech'}">
+        ${u.role === 'admin' ? 'ADMIN' : 'TÉCNICO'}
+      </span>
+      ${u.label ? `<span style="color:var(--muted);font-size:11px">${u.label}</span>` : ''}
+      <div class="user-actions">
+        ${u.username !== 'admin' ? `<button class="btn btn-danger" style="padding:4px 10px;font-size:10px" onclick="deleteUser('${u.username}')">✕</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function addUser() {
+  const name = document.getElementById('newUserName').value.trim();
+  const pass = document.getElementById('newUserPass').value;
+  const role = document.getElementById('newUserRole').value;
+  if (!name || !pass) { showToast('Preencha usuário e senha!'); return; }
+  const data = loadData();
+  if (data.users.find(u => u.username === name)) { showToast('Usuário já existe!'); return; }
+  data.users.push({ username: name, password: pass, role, label: name.toUpperCase() });
+  saveUsers(data.users);
+  renderUsersList();
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserPass').value = '';
+  showToast('Usuário criado!');
+}
+
+function deleteUser(username) {
+  if (!confirm(`Remover usuário "${username}"?`)) return;
+  const data = loadData();
+  data.users = data.users.filter(u => u.username !== username);
+  saveUsers(data.users);
+  renderUsersList();
+  showToast('Usuário removido.');
+}
+
+// ══════════════════════════════════════════════════
+//  MODAIS
+// ══════════════════════════════════════════════════
+function openModal(id) {
+  if (id === 'modalAddComputer') populateUnitSelect();
+  if (id === 'modalUsers') renderUsersList();
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// fechar clicando fora
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
