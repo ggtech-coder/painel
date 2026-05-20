@@ -542,18 +542,14 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
 // ═══════════════════════════════════════════
 // GITHUB API
 // ═══════════════════════════════════════════
-let GH = {
-  owner:'ggtech-coder',
-  repo:'dados',
- token:'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'
-};
+let GH = { owner:'ggtech-coder', repo:'dados', token:'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' };
 const FILES = { units:'data/units.json', users:'data/users.json' };
 const fileSHAs = {};
 
 function ghHeaders() {
   return {
-    Authorization: `token ${GH.token}`,
-    Accept: 'application/vnd.github+json',
+    'Authorization': 'token ' + GH.token,
+    'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json'
   };
 }
