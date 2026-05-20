@@ -220,7 +220,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
 <body>
 
 <!-- SETUP SCREEN -->
-<div id="setupScreen">
+<div id="setupScreen" class="hidden">
   <div class="setup-wrap">
     <div class="setup-logo">
       <span class="brand">GG TECH</span>
@@ -542,7 +542,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
 // ═══════════════════════════════════════════
 // GITHUB API
 // ═══════════════════════════════════════════
-let GH = { owner:'', repo:'', token:'' };
+let GH = { owner:'ggtech-coder', repo:'dados', token:'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' };
 const FILES = { units:'data/units.json', users:'data/users.json' };
 const fileSHAs = {};
 
@@ -636,17 +636,8 @@ async function saveUsers(msg) {
 // ═══════════════════════════════════════════
 // SETUP / CONFIG
 // ═══════════════════════════════════════════
-function loadConfig() {
-  try {
-    const c = JSON.parse(localStorage.getItem('ggtech_gh_config') || 'null');
-    if (c && c.owner && c.repo && c.token) { GH = c; return true; }
-  } catch {}
-  return false;
-}
-
-function saveConfig() {
-  localStorage.setItem('ggtech_gh_config', JSON.stringify(GH));
-}
+function loadConfig() { return true; }
+function saveConfig() { /* credenciais fixas no código */ }
 
 async function doSetup() {
   const owner = document.getElementById('cfg_owner').value.trim();
@@ -659,9 +650,7 @@ async function doSetup() {
   showLoading('VERIFICANDO GITHUB...');
   try {
     await initGitHub();
-    saveConfig();
     hideLoading();
-    document.getElementById('setupScreen').style.display = 'none';
     showLogin();
   } catch(e) {
     hideLoading();
@@ -1161,23 +1150,18 @@ function toast(msg,icon,cls){
 // BOOT
 // ═══════════════════════════════════════════
 (async function boot() {
-  if (loadConfig()) {
-    document.getElementById('setupScreen').style.display = 'none';
-    showLoading('CONECTANDO AO GITHUB...');
-    try {
-      await initGitHub();
-      hideLoading();
-      showLogin();
-    } catch(e) {
-      hideLoading();
-      // Volta para setup se config inválida
-      document.getElementById('setupScreen').style.display = 'flex';
-      document.getElementById('cfg_err').textContent = 'Erro na configuração salva: '+e.message+'. Verifique os dados.';
-      document.getElementById('cfg_owner').value = GH.owner;
-      document.getElementById('cfg_repo').value  = GH.repo;
-    }
+  showLoading('CONECTANDO AO GITHUB...');
+  try {
+    await initGitHub();
+    hideLoading();
+    showLogin();
+  } catch(e) {
+    hideLoading();
+    toast('Erro ao conectar ao GitHub: '+e.message,'❌','t-red');
+    setSyncStatus('err','OFFLINE');
+    // Mostra login mesmo assim para não travar
+    showLogin();
   }
-  // Se não tem config, setupScreen já está visível
 })();
 </script>
 </body>
