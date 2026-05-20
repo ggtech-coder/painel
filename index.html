@@ -552,8 +552,8 @@ const fileSHAs = {};
 
 function ghHeaders() {
   return {
-    'Authorization': 'token ' + GH.token,
-    'Accept': 'application/vnd.github.v3+json',
+    Authorization: `token ${GH.token}`,
+    Accept: 'application/vnd.github+json',
     'Content-Type': 'application/json'
   };
 }
