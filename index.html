@@ -228,7 +228,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
     </div>
     <div class="setup-info">
       <b>Como configurar:</b><br>
-      1. Crie um repositório <b>privado</b> no GitHub (ex: <code>ggtech-dados</code>)<br>
+      1. Crie um repositório <b>privado</b> no GitHub (ex: <code>ggtech-painel</code>)<br>
       2. Vá em <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a> → <b>Fine-grained tokens</b><br>
       3. Crie um token com permissão <b>Contents → Read &amp; Write</b> no repositório<br>
       4. Cole as informações abaixo. Elas ficam salvas localmente neste navegador.
@@ -239,7 +239,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
     </div>
     <div class="field">
       <label>NOME DO REPOSITÓRIO</label>
-      <input type="text" id="cfg_repo" placeholder="ggtech-dados">
+      <input type="text" id="cfg_repo" placeholder="ggtech-painel">
     </div>
     <div class="field">
       <label>TOKEN DE ACESSO (Fine-grained)</label>
@@ -525,7 +525,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
     </div>
     <div class="modal-body">
       <div class="field"><label>USUÁRIO GITHUB</label><input type="text" id="rc_owner" placeholder="seu-usuario"></div>
-      <div class="field"><label>REPOSITÓRIO</label><input type="text" id="rc_repo" placeholder="ggtech-dados"></div>
+      <div class="field"><label>REPOSITÓRIO</label><input type="text" id="rc_repo" placeholder="ggtech-painel"></div>
       <div class="field"><label>TOKEN</label><input type="password" id="rc_token" placeholder="github_pat_..."></div>
     </div>
     <div class="modal-footer">
@@ -542,7 +542,7 @@ main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20p
 // ═══════════════════════════════════════════
 // GITHUB API
 // ═══════════════════════════════════════════
-let GH = { owner:'ggtech-coder', repo:'dados', token:'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' };
+let GH = { owner:'ggtech-coder', repo:'painel', token:'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' };
 const FILES = { units:'data/units.json', users:'data/users.json' };
 const fileSHAs = {};
 
