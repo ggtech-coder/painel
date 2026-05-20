@@ -3,1020 +3,1067 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GG TECH – Painel de Acesso Remoto</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>GG TECH · Painel de Acesso Remoto</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:       #0a0c10;
-    --surface:  #111520;
-    --card:     #161b28;
-    --border:   #1e2840;
-    --accent:   #00d4ff;
-    --accent2:  #0090cc;
-    --green:    #00ff88;
-    --yellow:   #ffd700;
-    --red:      #ff4466;
-    --text:     #c8d8e8;
-    --muted:    #5a6a7a;
-    --white:    #e8f0f8;
-    --glow:     0 0 18px rgba(0,212,255,.35);
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060810;
+  --bg2:#0b0f1a;
+  --surface:#0f1422;
+  --card:#131929;
+  --card2:#171e30;
+  --border:#1c2538;
+  --border2:#253050;
+  --accent:#00e5ff;
+  --accent-dim:#0099bb;
+  --green:#00ff9d;
+  --green-dim:#00b36e;
+  --yellow:#ffcc00;
+  --yellow-dim:#b38f00;
+  --red:#ff3355;
+  --orange:#ff6b2b;
+  --purple:#a855f7;
+  --text:#b8cce0;
+  --text2:#7a93ae;
+  --white:#e0eefa;
+  --glow-blue:0 0 20px rgba(0,229,255,.3);
+  --glow-green:0 0 20px rgba(0,255,157,.3);
+  --glow-yellow:0 0 20px rgba(255,204,0,.3);
+  --glow-red:0 0 20px rgba(255,51,85,.3);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:9999}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-dim)}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#0d1525 0%,#060810 70%)}
+.login-wrap{width:400px;max-width:94vw;background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:52px 40px 40px;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,229,255,.1),inset 0 1px 0 rgba(0,229,255,.15)}
+.login-wrap::before{content:'';position:absolute;top:-1px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px}
+.login-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,.06) 0%,transparent 60%);pointer-events:none}
+.login-logo{text-align:center;margin-bottom:40px;position:relative;z-index:1}
+.login-logo .brand{font-family:'Orbitron',monospace;font-size:42px;font-weight:900;color:var(--accent);letter-spacing:6px;text-shadow:0 0 30px rgba(0,229,255,.6),0 0 60px rgba(0,229,255,.2);display:block}
+.login-logo .sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:4px;margin-top:6px;display:block}
+.login-logo .sub span{color:var(--accent);opacity:.7}
+.field{margin-bottom:18px;position:relative;z-index:1}
+.field label{display:block;font-size:10px;font-weight:600;color:var(--text2);letter-spacing:3px;margin-bottom:8px;font-family:'Share Tech Mono',monospace}
+.field input,.field select,.field textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.12),var(--glow-blue)}
+.field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a93ae' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.field input:disabled{opacity:.45;cursor:not-allowed}
+.login-err{min-height:20px;text-align:center;font-size:12px;color:var(--red);margin-bottom:10px;font-family:'Share Tech Mono',monospace}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;transition:all .2s;letter-spacing:.5px;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent-dim),var(--accent));color:#000;box-shadow:var(--glow-blue)}
+.btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 0 30px rgba(0,229,255,.5)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-yellow{background:var(--yellow);color:#000;box-shadow:var(--glow-yellow)}
+.btn-yellow:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-red{background:var(--red);color:#fff;box-shadow:var(--glow-red)}
+.btn-red:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-green{background:var(--green);color:#000;box-shadow:var(--glow-green)}
+.btn-green:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:6px}
+.btn-full{width:100%;padding:13px}
 
-  /* ── GRID BACKGROUND ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:64px;gap:16px}
+.h-logo{display:flex;align-items:center;gap:14px}
+.h-logo-mark{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0066aa,var(--accent));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:#000;box-shadow:var(--glow-blue);flex-shrink:0}
+.h-logo-text .name{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--accent);letter-spacing:3px;text-shadow:0 0 20px rgba(0,229,255,.4)}
+.h-logo-text .tagline{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:3px;margin-top:1px}
+.h-right{display:flex;align-items:center;gap:12px}
+.h-user{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:7px 14px}
+.h-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 10px var(--green)}50%{opacity:.3;box-shadow:none}}
+.h-user-name{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--white)}
+.h-badge{font-size:9px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:1px;font-family:'Share Tech Mono',monospace}
+.badge-admin{background:rgba(255,204,0,.15);color:var(--yellow);border:1px solid rgba(255,204,0,.3)}
+.badge-tech{background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.25)}
 
-  /* ── HEADER ── */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,12,16,.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 28px;
-    gap: 16px;
-  }
+/* MAIN */
+main{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:28px 20px 80px}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+/* ADMIN TOOLBAR */
+.admin-toolbar{background:linear-gradient(135deg,rgba(255,204,0,.06),rgba(255,204,0,.02));border:1px solid rgba(255,204,0,.2);border-radius:12px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.admin-toolbar-label{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--yellow);letter-spacing:2px;margin-right:6px}
 
-  .logo-icon {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700; font-size: 16px; color: #000;
-    box-shadow: var(--glow);
-  }
+/* SECTION */
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.section-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:4px}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent)}
 
-  .logo-text { font-family: 'Rajdhani', sans-serif; }
-  .logo-text span:first-child { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
-  .logo-text span:last-child  { display: block; font-size: 10px; color: var(--muted); letter-spacing: 3px; }
+/* UNIT */
+.unit{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden;transition:box-shadow .3s}
+.unit:hover{box-shadow:0 4px 40px rgba(0,229,255,.06)}
+.unit-header{display:flex;align-items:center;gap:16px;padding:18px 22px;cursor:pointer;user-select:none;transition:background .2s;position:relative}
+.unit-header:hover{background:rgba(0,229,255,.03)}
+.unit-color-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:14px 0 0 14px}
+.unit-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.unit-info{flex:1;min-width:0}
+.unit-name{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;letter-spacing:1px}
+.unit-desc{font-size:11px;color:var(--text2);margin-top:2px;font-family:'Share Tech Mono',monospace}
+.unit-stats{display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.stat-pill{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--text2);font-family:'Share Tech Mono',monospace}
+.stat-pill span{color:var(--white);font-weight:600}
+.chevron-wrap{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--surface);flex-shrink:0;transition:transform .3s}
+.unit.open .chevron-wrap{transform:rotate(180deg)}
+.chevron-wrap svg{color:var(--text2)}
+.unit-body{display:none;border-top:1px solid var(--border)}
+.unit.open .unit-body{display:block}
 
-  .header-right { display: flex; align-items: center; gap: 14px; }
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;background:var(--bg2)}
+.tab{padding:12px 20px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:22px}
+.tab-content.active{display:block}
 
-  .user-badge {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 11px;
-  }
+/* COMP GRID */
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.comp-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;transition:all .25s;position:relative;display:flex;flex-direction:column;gap:0}
+.comp-card:hover{border-color:var(--accent-dim);box-shadow:0 0 20px rgba(0,229,255,.12),0 4px 20px rgba(0,0,0,.3);transform:translateY(-2px)}
+.comp-status{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.comp-name{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--white);margin-bottom:12px;padding-right:20px;line-height:1.3}
+.comp-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;border-top:1px solid var(--border);padding-top:12px}
+.comp-meta-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+.comp-meta-label{color:var(--text2);font-family:'Share Tech Mono',monospace;letter-spacing:1px}
+.comp-meta-val{color:var(--white);font-family:'Share Tech Mono',monospace;font-weight:500;display:flex;align-items:center;gap:5px}
+.comp-anydesk-id{color:var(--accent);font-weight:700;letter-spacing:1px}
+.copy-btn{background:transparent;border:none;cursor:pointer;color:var(--text2);padding:1px 3px;border-radius:3px;font-size:11px;transition:color .15s}
+.copy-btn:hover{color:var(--accent)}
+.comp-actions{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.btn-connect-big{width:100%;padding:11px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,#005577,var(--accent));color:#000;font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:2px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-connect-big:hover{filter:brightness(1.2);transform:translateY(-1px);box-shadow:0 0 24px rgba(0,229,255,.5)}
+.btn-connect-big:active{transform:translateY(0)}
+.comp-sub-actions{display:flex;gap:6px}
+.comp-sub-actions .btn{flex:1;font-size:10px;padding:6px 8px}
+.comp-card-add{background:transparent;border:1px dashed var(--border2);border-radius:10px;padding:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;min-height:180px;transition:all .2s;color:var(--text2)}
+.comp-card-add:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.03)}
+.comp-card-add-icon{font-size:28px;opacity:.5}
+.comp-card-add-label{font-size:11px;letter-spacing:2px;font-family:'Share Tech Mono',monospace}
 
-  .user-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s infinite;
-  }
+/* INSUMOS */
+.insumos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.insumo-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:all .2s}
+.insumo-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.insumo-name{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;color:var(--white)}
+.insumo-model{font-size:11px;color:var(--text2)}
+.insumo-qty-wrap{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:8px;padding:8px 12px}
+.insumo-qty-label{font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace;letter-spacing:1px}
+.insumo-qty{font-family:'Orbitron',monospace;font-size:22px;font-weight:700}
+.qty-ok{color:var(--green);text-shadow:0 0 12px var(--green)}
+.qty-warn{color:var(--yellow);text-shadow:0 0 12px var(--yellow)}
+.qty-low{color:var(--red);text-shadow:0 0 12px var(--red)}
+.insumo-threshold{font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace}
+.stock-bar{height:4px;border-radius:2px;background:var(--border);overflow:hidden}
+.stock-fill{height:100%;border-radius:2px;transition:width .4s}
+.qty-stepper{display:flex;align-items:center;gap:8px}
+.qty-step-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--white);cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.qty-step-btn:hover{border-color:var(--accent);color:var(--accent)}
+.qty-current{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;min-width:28px;text-align:center}
+.insumo-edit-row{display:flex;gap:6px}
+.insumo-edit-row .btn{flex:1;font-size:10px;padding:5px 6px}
 
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+/* MODAIS */
+.overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 0 80px rgba(0,0,0,.7),0 0 40px rgba(0,229,255,.06);position:relative}
+.modal-lg{width:620px}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:1;border-radius:16px 16px 0 0}
+.modal-title{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:10px}
+.modal-close{background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--text2);width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .15s}
+.modal-close:hover{color:var(--white);border-color:var(--red)}
+.modal-body{padding:24px 28px}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:1/-1}
 
-  .btn {
-    padding: 7px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    transition: all .2s;
-  }
+/* USERS */
+.user-row{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.user-uname{font-weight:600;color:var(--white);font-size:13px;flex:1}
+.user-actions{display:flex;gap:6px}
 
-  .btn-accent {
-    background: var(--accent);
-    color: #000;
-    box-shadow: var(--glow);
-  }
-  .btn-accent:hover { background: #33ddff; transform: translateY(-1px); }
+/* CONNECT MODAL */
+.connect-panel{display:flex;flex-direction:column;align-items:center;gap:20px}
+.anydesk-display{background:var(--bg);border:2px solid var(--accent);border-radius:12px;padding:20px 32px;text-align:center;box-shadow:var(--glow-blue);width:100%}
+.anydesk-display .dlabel{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:3px;margin-bottom:8px}
+.anydesk-display .did{font-family:'Orbitron',monospace;font-size:30px;font-weight:900;color:var(--accent);letter-spacing:4px;text-shadow:0 0 20px rgba(0,229,255,.6)}
+.connect-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.connect-info-cell{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px}
+.connect-info-cell .lbl{font-size:9px;color:var(--text2);letter-spacing:2px;font-family:'Share Tech Mono',monospace;margin-bottom:4px}
+.connect-info-cell .val{font-size:13px;color:var(--white);font-family:'Share Tech Mono',monospace;font-weight:500}
+.connect-pass{background:rgba(255,204,0,.06);border:1px solid rgba(255,204,0,.25);border-radius:8px;padding:12px 20px;width:100%;text-align:center}
+.connect-pass .lbl{font-size:10px;color:var(--yellow-dim);letter-spacing:2px;font-family:'Share Tech Mono',monospace;margin-bottom:4px}
+.connect-pass .pass{font-family:'Orbitron',monospace;font-size:18px;color:var(--yellow);text-shadow:0 0 12px rgba(255,204,0,.4);letter-spacing:2px}
+.connect-btns{display:flex;gap:10px;width:100%}
+.connect-note{font-size:11px;color:var(--text2);text-align:center;font-family:'Share Tech Mono',monospace;line-height:1.6}
 
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:600;background:var(--card);border-radius:10px;padding:13px 20px;font-size:13px;color:var(--white);box-shadow:0 4px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{font-size:18px;flex-shrink:0}
+.toast.t-green{border-left:3px solid var(--green)}
+.toast.t-blue{border-left:3px solid var(--accent)}
+.toast.t-red{border-left:3px solid var(--red)}
+.toast.t-yellow{border-left:3px solid var(--yellow)}
 
-  .btn-danger { background: var(--red); color: #fff; }
-  .btn-danger:hover { background: #ff6680; }
-
-  /* ── LOGIN ── */
-  #loginScreen {
-    position: fixed; inset: 0; z-index: 200;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg);
-  }
-
-  .login-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 48px 40px;
-    width: 360px;
-    box-shadow: 0 0 60px rgba(0,212,255,.12);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .login-box::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: 20%; right: 20%; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-
-  .login-logo {
-    text-align: center; margin-bottom: 32px;
-  }
-  .login-logo .big { font-family: 'Rajdhani', sans-serif; font-size: 36px; font-weight: 700; color: var(--accent); letter-spacing: 4px; }
-  .login-logo .sub { font-size: 10px; color: var(--muted); letter-spacing: 4px; margin-top: 4px; }
-
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; }
-
-  .field input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 14px;
-    color: var(--white);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,.1); }
-
-  .login-error {
-    color: var(--red); font-size: 11px; text-align: center;
-    margin-bottom: 12px; min-height: 16px;
-  }
-
-  /* ── MAIN ── */
-  main {
-    position: relative; z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 28px 20px 60px;
-  }
-
-  .page-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px; font-weight: 500;
-    color: var(--muted);
-    letter-spacing: 2px;
-    margin-bottom: 24px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .page-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* ── UNIDADES ── */
-  .unit {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 14px;
-    overflow: hidden;
-    transition: box-shadow .2s;
-  }
-  .unit:hover { box-shadow: 0 0 24px rgba(0,212,255,.08); }
-
-  .unit-header {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px 20px;
-    cursor: pointer;
-    user-select: none;
-    transition: background .2s;
-  }
-  .unit-header:hover { background: rgba(0,212,255,.04); }
-
-  .unit-icon {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-
-  .unit-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 17px; font-weight: 600;
-    color: var(--white);
-    letter-spacing: 1px;
-  }
-
-  .unit-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-  .unit-count {
-    margin-left: auto;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 11px; color: var(--muted);
-  }
-
-  .chevron {
-    width: 18px; height: 18px; color: var(--muted);
-    transition: transform .3s;
-    flex-shrink: 0;
-  }
-  .unit.open .chevron { transform: rotate(180deg); }
-
-  .unit-body {
-    display: none;
-    padding: 0 20px 20px;
-    border-top: 1px solid var(--border);
-  }
-  .unit.open .unit-body { display: block; }
-
-  /* ── COMPUTADORES ── */
-  .computers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .computer-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    transition: all .2s;
-    position: relative;
-  }
-  .computer-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 16px rgba(0,212,255,.15);
-    transform: translateY(-2px);
-  }
-
-  .computer-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px; font-weight: 600;
-    color: var(--white);
-    margin-bottom: 6px;
-  }
-
-  .computer-anydesk {
-    font-size: 11px; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .anydesk-id {
-    color: var(--accent);
-    font-weight: 500;
-    letter-spacing: 1px;
-  }
-
-  .computer-info {
-    font-size: 10px; color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 10px;
-    border-top: 1px solid var(--border);
-    padding-top: 8px;
-  }
-  .computer-info span { color: var(--text); }
-
-  .btn-connect {
-    width: 100%;
-    padding: 8px;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px; font-weight: 700;
-    letter-spacing: 1px;
-    transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-connect:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: var(--glow); }
-
-  .btn-edit-id {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--muted);
-    padding: 3px 7px;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .btn-edit-id:hover { border-color: var(--yellow); color: var(--yellow); }
-
-  /* ── ADMIN PANEL ── */
-  .admin-bar {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  }
-
-  .admin-bar-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px; font-weight: 600;
-    color: var(--yellow);
-    letter-spacing: 1px;
-    margin-right: 4px;
-  }
-
-  /* ── MODAIS ── */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,.7);
-    backdrop-filter: blur(4px);
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.show { display: flex; }
-
-  .modal {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 32px;
-    width: 420px;
-    max-width: 95vw;
-    position: relative;
-    box-shadow: 0 0 60px rgba(0,0,0,.6);
-  }
-
-  .modal-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px; font-weight: 700;
-    color: var(--white);
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .modal-close {
-    position: absolute; top: 14px; right: 16px;
-    background: transparent; border: none;
-    color: var(--muted); font-size: 20px; cursor: pointer;
-  }
-  .modal-close:hover { color: var(--white); }
-
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
-
-  /* ── USERS TABLE ── */
-  .users-list { margin-top: 16px; }
-
-  .user-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    margin-bottom: 8px;
-  }
-
-  .user-role {
-    font-size: 10px; padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 600; letter-spacing: 1px;
-  }
-  .role-admin { background: rgba(255,215,0,.15); color: var(--yellow); border: 1px solid rgba(255,215,0,.3); }
-  .role-tech  { background: rgba(0,212,255,.1);  color: var(--accent);  border: 1px solid rgba(0,212,255,.25); }
-
-  .user-actions { margin-left: auto; display: flex; gap: 6px; }
-
-  /* ADD COMPUTER FORM */
-  .add-computer-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 28px; right: 28px; z-index: 400;
-    background: var(--surface);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-size: 12px; color: var(--accent);
-    box-shadow: var(--glow);
-    opacity: 0; transform: translateY(10px);
-    transition: all .3s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
-
-  .hidden { display: none !important; }
-
-  select {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px 14px;
-    color: var(--white); font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; outline: none; width: 100%;
-  }
-  select:focus { border-color: var(--accent); }
-
-  .section-label {
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 2px; margin: 16px 0 8px;
-    text-transform: uppercase;
-  }
+.hidden{display:none!important}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.section-label{font-size:10px;color:var(--text2);letter-spacing:3px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.empty-state{text-align:center;padding:40px;color:var(--text2);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px}
+.empty-state .icon{font-size:36px;margin-bottom:12px;opacity:.4}
 </style>
 </head>
 <body>
 
-<!-- ══════════════ LOGIN ══════════════ -->
+<!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-box">
+  <div class="login-wrap">
     <div class="login-logo">
-      <div class="big">GG TECH</div>
-      <div class="sub">ACESSO REMOTO · PAINEL DE CONTROLE</div>
+      <span class="brand">GG TECH</span>
+      <span class="sub">GERENCIAMENTO DE <span>ACESSO REMOTO</span></span>
     </div>
-    <div class="field">
-      <label>USUÁRIO</label>
-      <input type="text" id="loginUser" placeholder="seu.usuario" autocomplete="username">
-    </div>
-    <div class="field">
-      <label>SENHA</label>
-      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <div class="login-error" id="loginError"></div>
-    <button class="btn btn-accent" style="width:100%;padding:12px;font-size:14px;letter-spacing:2px;" onclick="doLogin()">ENTRAR</button>
+    <div class="field"><label>USUÁRIO</label><input type="text" id="li_user" placeholder="seu.usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field"><label>SENHA</label><input type="password" id="li_pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-err" id="li_err"></div>
+    <button class="btn btn-primary btn-full" style="font-family:'Orbitron',monospace;letter-spacing:3px;font-size:14px" onclick="doLogin()">ENTRAR</button>
   </div>
 </div>
 
-<!-- ══════════════ HEADER ══════════════ -->
+<!-- HEADER -->
 <header>
-  <div class="logo">
-    <div class="logo-icon">GG</div>
-    <div class="logo-text">
-      <span>GG TECH</span>
-      <span>GERENCIAMENTO DE ACESSO REMOTO</span>
+  <div class="h-logo">
+    <div class="h-logo-mark">GG</div>
+    <div class="h-logo-text">
+      <div class="name">GG TECH</div>
+      <div class="tagline">PAINEL DE ACESSO REMOTO</div>
     </div>
   </div>
-  <div class="header-right">
-    <div class="user-badge">
-      <div class="user-dot"></div>
-      <span id="headerUserLabel">–</span>
+  <div class="h-right">
+    <div class="h-user">
+      <div class="h-dot"></div>
+      <span class="h-user-name" id="h_username">–</span>
+      <span class="h-badge" id="h_badge">–</span>
     </div>
-    <button class="btn btn-ghost" onclick="doLogout()">SAIR</button>
+    <button class="btn btn-ghost btn-sm" onclick="doLogout()">SAIR</button>
   </div>
 </header>
 
-<!-- ══════════════ MAIN ══════════════ -->
+<!-- MAIN -->
 <main>
-
-  <!-- ADMIN BAR (só admin vê) -->
-  <div class="admin-bar hidden" id="adminBar">
-    <span class="admin-bar-title">⚡ ADMIN</span>
-    <button class="btn btn-accent" onclick="openModal('modalAddUnit')">+ Unidade</button>
-    <button class="btn btn-ghost" onclick="openModal('modalAddComputer')">+ Computador</button>
-    <button class="btn btn-ghost" onclick="openModal('modalUsers')">👥 Usuários</button>
+  <div class="admin-toolbar hidden" id="adminBar">
+    <span class="admin-toolbar-label">⚡ ADMIN</span>
+    <button class="btn btn-primary btn-sm" onclick="openModal('m_addUnit')">＋ Unidade</button>
+    <button class="btn btn-ghost btn-sm" onclick="openAddComp(null)">＋ Computador</button>
+    <button class="btn btn-ghost btn-sm" onclick="openAddInsumo(null)">＋ Insumo</button>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('m_users')">👥 Usuários</button>
   </div>
-
-  <div class="page-title">UNIDADES DE SAÚDE</div>
-
-  <!-- UNIDADES CONTAINER -->
+  <div class="section-head">
+    <div class="section-title">UNIDADES DE SAÚDE</div>
+    <div class="section-line"></div>
+  </div>
   <div id="unitsContainer"></div>
-
 </main>
 
-<!-- ══════════════ MODAIS ══════════════ -->
-
-<!-- MODAL: Editar AnyDesk ID (técnico) -->
-<div class="modal-overlay" id="modalEditId">
+<!-- MODAL: CONECTAR -->
+<div class="overlay" id="m_connect">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('modalEditId')">✕</button>
-    <div class="modal-title">✏️ Editar ID AnyDesk</div>
-    <input type="hidden" id="editIdUnitKey">
-    <input type="hidden" id="editIdCompKey">
-    <div class="field">
-      <label>NOME DA MÁQUINA</label>
-      <input type="text" id="editIdMachine" disabled style="opacity:.5">
+    <div class="modal-header">
+      <div class="modal-title">⚡ CONECTAR VIA ANYDESK</div>
+      <button class="modal-close" onclick="closeModal('m_connect')">✕</button>
     </div>
-    <div class="field">
-      <label>NOVO ID ANYDESK</label>
-      <input type="text" id="editIdValue" placeholder="ex: 123 456 789">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalEditId')">Cancelar</button>
-      <button class="btn btn-accent" onclick="saveAnyDeskId()">Salvar</button>
+    <div class="modal-body">
+      <div class="connect-panel">
+        <div class="anydesk-display">
+          <div class="dlabel">ID ANYDESK</div>
+          <div class="did" id="conn_id">—</div>
+        </div>
+        <div class="connect-info-grid">
+          <div class="connect-info-cell"><div class="lbl">MÁQUINA</div><div class="val" id="conn_name">—</div></div>
+          <div class="connect-info-cell"><div class="lbl">UNIDADE</div><div class="val" id="conn_unit">—</div></div>
+          <div class="connect-info-cell"><div class="lbl">ENDEREÇO IP</div><div class="val" id="conn_ip">—</div></div>
+          <div class="connect-info-cell"><div class="lbl">Nº SÉRIE</div><div class="val" id="conn_serial">—</div></div>
+        </div>
+        <div class="connect-pass">
+          <div class="lbl">SENHA NÃO SUPERVISIONADO</div>
+          <div class="pass">*Operacional</div>
+        </div>
+        <div class="connect-btns">
+          <button class="btn btn-primary" style="flex:2;font-family:'Orbitron',monospace;letter-spacing:2px;font-size:13px" onclick="doConnect()">⚡ ABRIR ANYDESK</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="copyAnyDeskId()">📋 COPIAR ID</button>
+        </div>
+        <div class="connect-note">
+          Se o AnyDesk não abrir automaticamente, clique em COPIAR ID e cole diretamente no app AnyDesk instalado no seu computador.
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Adicionar Unidade (admin) -->
-<div class="modal-overlay" id="modalAddUnit">
+<!-- MODAL: EDITAR COMPUTADOR -->
+<div class="overlay" id="m_editComp">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('modalAddUnit')">✕</button>
-    <div class="modal-title">🏥 Nova Unidade</div>
-    <div class="field"><label>NOME DA UNIDADE</label><input type="text" id="newUnitName" placeholder="ex: UPA Central"></div>
-    <div class="field"><label>DESCRIÇÃO (opcional)</label><input type="text" id="newUnitDesc" placeholder="ex: Unidade de Pronto Atendimento"></div>
-    <div class="field">
-      <label>ÍCONE</label>
-      <select id="newUnitIcon">
-        <option value="🏥">🏥 Hospital</option>
-        <option value="🚑">🚑 UPA</option>
-        <option value="🧠">🧠 PSI</option>
-        <option value="🏨">🏨 Policlínica</option>
-        <option value="💊">💊 Farmácia</option>
-        <option value="🖥️">🖥️ TI</option>
-      </select>
+    <div class="modal-header">
+      <div class="modal-title">🖥️ <span id="editComp_title">Editar Computador</span></div>
+      <button class="modal-close" onclick="closeModal('m_editComp')">✕</button>
     </div>
-    <div class="field">
-      <label>COR</label>
-      <select id="newUnitColor">
-        <option value="#00d4ff">Azul Ciano</option>
-        <option value="#00ff88">Verde</option>
-        <option value="#ffd700">Amarelo</option>
-        <option value="#ff4466">Vermelho</option>
-        <option value="#a78bfa">Roxo</option>
-        <option value="#fb923c">Laranja</option>
-      </select>
+    <div class="modal-body">
+      <input type="hidden" id="editComp_uk"><input type="hidden" id="editComp_ck">
+      <div class="form-grid">
+        <div class="field full"><label>NOME DA MÁQUINA</label><input type="text" id="ec_name" placeholder="ex: TRIAGEM 01"></div>
+        <div class="field full"><label>ID ANYDESK</label><input type="text" id="ec_anydesk" placeholder="123 456 789"></div>
+        <div class="field" id="ec_ip_field"><label>ENDEREÇO IP</label><input type="text" id="ec_ip" placeholder="192.168.1.10"></div>
+        <div class="field" id="ec_serial_field"><label>Nº DE SÉRIE</label><input type="text" id="ec_serial" placeholder="SN-XXXXXXX"></div>
+        <div class="field full" id="ec_obs_field"><label>OBSERVAÇÃO</label><input type="text" id="ec_obs" placeholder="ex: Dell OptiPlex"></div>
+      </div>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalAddUnit')">Cancelar</button>
-      <button class="btn btn-accent" onclick="addUnit()">Criar Unidade</button>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_editComp')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveComp()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Adicionar Computador (admin) -->
-<div class="modal-overlay" id="modalAddComputer">
+<!-- MODAL: ADICIONAR COMPUTADOR -->
+<div class="overlay" id="m_addComp">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('modalAddComputer')">✕</button>
-    <div class="modal-title">🖥️ Novo Computador</div>
-    <div class="field">
-      <label>UNIDADE</label>
-      <select id="newCompUnit"></select>
+    <div class="modal-header">
+      <div class="modal-title">＋ Novo Computador</div>
+      <button class="modal-close" onclick="closeModal('m_addComp')">✕</button>
     </div>
-    <div class="add-computer-grid">
-      <div class="field"><label>NOME DA MÁQUINA</label><input type="text" id="newCompName" placeholder="ex: TRIAGEM 01"></div>
-      <div class="field"><label>ID ANYDESK</label><input type="text" id="newCompAnydesk" placeholder="123 456 789"></div>
-      <div class="field"><label>IP (opcional)</label><input type="text" id="newCompIp" placeholder="192.168.1.10"></div>
-      <div class="field"><label>Nº SÉRIE (opcional)</label><input type="text" id="newCompSerial" placeholder="SN-XXXXXXX"></div>
+    <div class="modal-body">
+      <div class="field"><label>UNIDADE</label><select id="ac_unit"></select></div>
+      <div class="form-grid">
+        <div class="field full"><label>NOME DA MÁQUINA</label><input type="text" id="ac_name" placeholder="ex: TRIAGEM 01"></div>
+        <div class="field full"><label>ID ANYDESK</label><input type="text" id="ac_anydesk" placeholder="123 456 789"></div>
+        <div class="field"><label>ENDEREÇO IP</label><input type="text" id="ac_ip" placeholder="192.168.1.10"></div>
+        <div class="field"><label>Nº DE SÉRIE</label><input type="text" id="ac_serial" placeholder="SN-XXXXXXX"></div>
+        <div class="field full"><label>OBSERVAÇÃO</label><input type="text" id="ac_obs" placeholder="ex: Dell OptiPlex, sala de triagem"></div>
+      </div>
     </div>
-    <div class="field"><label>OBSERVAÇÃO (opcional)</label><input type="text" id="newCompObs" placeholder="ex: Desktop Dell, sala de triagem"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalAddComputer')">Cancelar</button>
-      <button class="btn btn-accent" onclick="addComputer()">Adicionar</button>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_addComp')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addComp()">Adicionar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Gerenciar Usuários (admin) -->
-<div class="modal-overlay" id="modalUsers">
-  <div class="modal" style="width:500px">
-    <button class="modal-close" onclick="closeModal('modalUsers')">✕</button>
-    <div class="modal-title">👥 Gerenciar Usuários</div>
-
-    <div class="section-label">Adicionar usuário</div>
-    <div class="add-computer-grid">
-      <div class="field"><label>USUÁRIO</label><input type="text" id="newUserName" placeholder="tecnico01"></div>
-      <div class="field"><label>SENHA</label><input type="password" id="newUserPass" placeholder="senha"></div>
+<!-- MODAL: ADICIONAR UNIDADE -->
+<div class="overlay" id="m_addUnit">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🏥 Nova Unidade</div>
+      <button class="modal-close" onclick="closeModal('m_addUnit')">✕</button>
     </div>
-    <div class="field">
-      <label>PERFIL</label>
-      <select id="newUserRole">
-        <option value="tech">Técnico (edita apenas AnyDesk)</option>
-        <option value="admin">Admin (controle total)</option>
-      </select>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full"><label>NOME DA UNIDADE</label><input type="text" id="au_name" placeholder="ex: UPA CENTRAL"></div>
+        <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="au_desc" placeholder="ex: Unidade de Pronto Atendimento"></div>
+        <div class="field"><label>ÍCONE</label>
+          <select id="au_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Policlínica</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select>
+        </div>
+        <div class="field"><label>COR</label>
+          <select id="au_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-accent" style="width:100%" onclick="addUser()">Adicionar Usuário</button>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_addUnit')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addUnit()">Criar</button>
+    </div>
+  </div>
+</div>
 
-    <div class="section-label" style="margin-top:20px">Usuários cadastrados</div>
-    <div class="users-list" id="usersList"></div>
+<!-- MODAL: EDITAR UNIDADE -->
+<div class="overlay" id="m_editUnit">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Editar Unidade</div>
+      <button class="modal-close" onclick="closeModal('m_editUnit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="eu_key">
+      <div class="form-grid">
+        <div class="field full"><label>NOME</label><input type="text" id="eu_name"></div>
+        <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="eu_desc"></div>
+        <div class="field"><label>ÍCONE</label>
+          <select id="eu_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Policlínica</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select>
+        </div>
+        <div class="field"><label>COR</label>
+          <select id="eu_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_editUnit')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUnit()">Salvar</button>
+    </div>
+  </div>
+</div>
 
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalUsers')">Fechar</button>
+<!-- MODAL: INSUMO -->
+<div class="overlay" id="m_editInsumo">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📦 <span id="ei_title">Insumo</span></div>
+      <button class="modal-close" onclick="closeModal('m_editInsumo')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ei_uk"><input type="hidden" id="ei_ik">
+      <div class="field"><label>UNIDADE</label><select id="ei_unit"></select></div>
+      <div class="form-grid">
+        <div class="field full"><label>NOME DO INSUMO</label><input type="text" id="ei_name" placeholder="ex: Toner HP LaserJet 26A"></div>
+        <div class="field full"><label>MODELO / REFERÊNCIA</label><input type="text" id="ei_model" placeholder="ex: CF226A / 26A"></div>
+        <div class="field"><label>QTD EM ESTOQUE</label><input type="number" id="ei_qty" value="0" min="0"></div>
+        <div class="field"><label>ALERTA MÍNIMO</label><input type="number" id="ei_min" value="2" min="0"></div>
+        <div class="field full"><label>OBSERVAÇÃO</label><input type="text" id="ei_obs" placeholder="ex: Impressora da triagem"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_editInsumo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveInsumo()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: USUÁRIOS -->
+<div class="overlay" id="m_users">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">👥 Usuários</div>
+      <button class="modal-close" onclick="closeModal('m_users')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-label">ADICIONAR</div>
+      <div class="form-grid">
+        <div class="field"><label>USUÁRIO</label><input type="text" id="nu_name" placeholder="tecnico01"></div>
+        <div class="field"><label>SENHA</label><input type="password" id="nu_pass" placeholder="••••••••"></div>
+        <div class="field"><label>PERFIL</label>
+          <select id="nu_role">
+            <option value="tech">Técnico (edita nome e AnyDesk)</option>
+            <option value="admin">Admin (controle total)</option>
+          </select>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <button class="btn btn-primary" style="width:100%" onclick="addUser()">Adicionar</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">CADASTRADOS</div>
+      <div id="usersList"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_users')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: TROCAR SENHA -->
+<div class="overlay" id="m_changePass">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔑 Trocar Senha</div>
+      <button class="modal-close" onclick="closeModal('m_changePass')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cp_username">
+      <div class="field"><label>USUÁRIO</label><input type="text" id="cp_display" disabled></div>
+      <div class="field"><label>NOVA SENHA</label><input type="password" id="cp_pass" placeholder="Nova senha"></div>
+      <div class="field"><label>CONFIRMAR SENHA</label><input type="password" id="cp_pass2" placeholder="Repita a senha"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_changePass')">Cancelar</button>
+      <button class="btn btn-yellow" onclick="doChangePass()">Salvar Senha</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><span class="toast-icon" id="toast_icon">✅</span><span id="toast_msg"></span></div>
 
 <script>
-// ══════════════════════════════════════════════════
-//  DADOS PADRÃO
-// ══════════════════════════════════════════════════
-const DEFAULT_USERS = [
-  { username: 'admin', password: 'GGtech@2024', role: 'admin', label: 'ADMINISTRADOR' }
-];
+// ═══════════════════════════════
+// DEFAULTS
+// ═══════════════════════════════
+const DEFAULTS={
+  users:[{username:'admin',password:'GGtech@2024',role:'admin'}],
+  units:[
+    {key:'upa_atalaia',name:'UPA ATALAIA',desc:'Unidade de Pronto Atendimento',icon:'🚑',color:'#00e5ff',
+     computers:[
+       {key:'c1',name:'TRIAGEM 01',anydesk:'',ip:'',serial:'',obs:'Triagem principal'},
+       {key:'c2',name:'TRIAGEM 02',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c3',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:'Balcão de recepção'},
+       {key:'c4',name:'FARMÁCIA',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c5',name:'MÉDICO 01',anydesk:'',ip:'',serial:'',obs:'Consultório 1'},
+     ],
+     insumos:[
+       {key:'i1',name:'Toner HP LaserJet',model:'CF226A / 26A',qty:3,min:2,obs:'Impressora triagem'},
+       {key:'i2',name:'Toner Samsung',model:'MLT-D101S',qty:1,min:2,obs:'Impressora recepção'},
+     ]},
+    {key:'pq_sao_jorge',name:'PQ SÃO JORGE',desc:'Policlínica São Jorge',icon:'🏥',color:'#00ff9d',
+     computers:[
+       {key:'c1',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c2',name:'CONSULTÓRIO 01',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c3',name:'CONSULTÓRIO 02',anydesk:'',ip:'',serial:'',obs:''},
+     ],
+     insumos:[{key:'i1',name:'Toner Canon',model:'CRG-052',qty:2,min:2,obs:''}]},
+    {key:'psi',name:'PSI',desc:'Centro de Atenção Psicossocial',icon:'🧠',color:'#a855f7',
+     computers:[
+       {key:'c1',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c2',name:'SALA TÉCNICA',anydesk:'',ip:'',serial:'',obs:''},
+     ],
+     insumos:[{key:'i1',name:'Toner Brother',model:'TN-1060',qty:4,min:2,obs:''}]},
+    {key:'upa_caucaia',name:'UPA CAUCAIA',desc:'Unidade de Pronto Atendimento',icon:'🚑',color:'#ff6b2b',
+     computers:[
+       {key:'c1',name:'TRIAGEM 01',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c2',name:'TRIAGEM 02',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c3',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:''},
+       {key:'c4',name:'MÉDICO 01',anydesk:'',ip:'',serial:'',obs:''},
+     ],
+     insumos:[
+       {key:'i1',name:'Toner HP LaserJet',model:'CF226A / 26A',qty:0,min:2,obs:'Impressora triagem'},
+       {key:'i2',name:'Toner Epson',model:'S050614',qty:1,min:2,obs:'Recepção'},
+     ]}
+  ]
+};
 
-const DEFAULT_UNITS = [
-  {
-    key: 'upa_atalaia',
-    name: 'UPA ATALAIA',
-    desc: 'Unidade de Pronto Atendimento',
-    icon: '🚑',
-    color: '#00d4ff',
-    computers: [
-      { key: 'c1', name: 'TRIAGEM 01',     anydesk: '123 456 001', ip: '192.168.1.10', serial: 'SN-AT001', obs: 'Dell OptiPlex, triagem' },
-      { key: 'c2', name: 'TRIAGEM 02',     anydesk: '123 456 002', ip: '192.168.1.11', serial: 'SN-AT002', obs: '' },
-      { key: 'c3', name: 'RECEPÇÃO',       anydesk: '123 456 003', ip: '192.168.1.12', serial: 'SN-AT003', obs: 'Recepção principal' },
-      { key: 'c4', name: 'FARMÁCIA',       anydesk: '123 456 004', ip: '192.168.1.13', serial: 'SN-AT004', obs: '' },
-      { key: 'c5', name: 'MÉDICO 01',      anydesk: '123 456 005', ip: '192.168.1.14', serial: 'SN-AT005', obs: 'Consultório 1' },
-    ]
-  },
-  {
-    key: 'pq_sao_jorge',
-    name: 'PQ SÃO JORGE',
-    desc: 'Policlínica São Jorge',
-    icon: '🏥',
-    color: '#00ff88',
-    computers: [
-      { key: 'c1', name: 'RECEPÇÃO',       anydesk: '234 567 001', ip: '192.168.2.10', serial: 'SN-SJ001', obs: '' },
-      { key: 'c2', name: 'CONSULTÓRIO 01', anydesk: '234 567 002', ip: '192.168.2.11', serial: 'SN-SJ002', obs: '' },
-      { key: 'c3', name: 'CONSULTÓRIO 02', anydesk: '234 567 003', ip: '192.168.2.12', serial: 'SN-SJ003', obs: '' },
-    ]
-  },
-  {
-    key: 'psi',
-    name: 'PSI',
-    desc: 'Centro de Atenção Psicossocial',
-    icon: '🧠',
-    color: '#a78bfa',
-    computers: [
-      { key: 'c1', name: 'RECEPÇÃO',       anydesk: '345 678 001', ip: '192.168.3.10', serial: 'SN-PS001', obs: '' },
-      { key: 'c2', name: 'SALA TÉCNICA',   anydesk: '345 678 002', ip: '192.168.3.11', serial: 'SN-PS002', obs: '' },
-    ]
-  },
-  {
-    key: 'upa_caucaia',
-    name: 'UPA CAUCAIA',
-    desc: 'Unidade de Pronto Atendimento',
-    icon: '🚑',
-    color: '#fb923c',
-    computers: [
-      { key: 'c1', name: 'TRIAGEM 01',     anydesk: '456 789 001', ip: '192.168.4.10', serial: 'SN-CA001', obs: '' },
-      { key: 'c2', name: 'TRIAGEM 02',     anydesk: '456 789 002', ip: '192.168.4.11', serial: 'SN-CA002', obs: '' },
-      { key: 'c3', name: 'RECEPÇÃO',       anydesk: '456 789 003', ip: '192.168.4.12', serial: 'SN-CA003', obs: '' },
-      { key: 'c4', name: 'MÉDICO 01',      anydesk: '456 789 004', ip: '192.168.4.13', serial: 'SN-CA004', obs: '' },
-    ]
-  }
-];
+// ═══════════════════════════════
+// STORAGE
+// ═══════════════════════════════
+const S={
+  get(k){try{return JSON.parse(localStorage.getItem('ggtech_'+k))}catch{return null}},
+  set(k,v){localStorage.setItem('ggtech_'+k,JSON.stringify(v))},
+  users(){return this.get('users')||JSON.parse(JSON.stringify(DEFAULTS.users))},
+  units(){return this.get('units')||JSON.parse(JSON.stringify(DEFAULTS.units))},
+  saveU(v){this.set('users',v)},
+  saveN(v){this.set('units',v)}
+};
+if(!S.get('users'))S.saveU(JSON.parse(JSON.stringify(DEFAULTS.users)));
+if(!S.get('units'))S.saveN(JSON.parse(JSON.stringify(DEFAULTS.units)));
 
-// ══════════════════════════════════════════════════
-//  STORAGE
-// ══════════════════════════════════════════════════
-function loadData() {
-  try {
-    const u = localStorage.getItem('ggtech_users');
-    const d = localStorage.getItem('ggtech_units');
-    return {
-      users: u ? JSON.parse(u) : [...DEFAULT_USERS],
-      units: d ? JSON.parse(d) : JSON.parse(JSON.stringify(DEFAULT_UNITS))
-    };
-  } catch { return { users: [...DEFAULT_USERS], units: JSON.parse(JSON.stringify(DEFAULT_UNITS)) }; }
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let CU=null;
+const openUnits={};
+const openTabs={};
+
+// ═══════════════════════════════
+// AUTH
+// ═══════════════════════════════
+function doLogin(){
+  const u=document.getElementById('li_user').value.trim();
+  const p=document.getElementById('li_pass').value;
+  const found=S.users().find(x=>x.username===u&&x.password===p);
+  if(!found){document.getElementById('li_err').textContent='Usuário ou senha incorretos.';return;}
+  CU=found;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('h_username').textContent=u.toUpperCase();
+  const b=document.getElementById('h_badge');
+  b.textContent=found.role==='admin'?'ADMIN':'TÉCNICO';
+  b.className='h-badge '+(found.role==='admin'?'badge-admin':'badge-tech');
+  document.getElementById('adminBar').classList.toggle('hidden',found.role!=='admin');
+  render();
+}
+function doLogout(){
+  CU=null;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('li_user').value='';
+  document.getElementById('li_pass').value='';
+  document.getElementById('li_err').textContent='';
 }
 
-function saveUsers(users) { localStorage.setItem('ggtech_users', JSON.stringify(users)); }
-function saveUnits(units) { localStorage.setItem('ggtech_units', JSON.stringify(units)); }
-
-// inicializa storage se vazio
-(function init() {
-  if (!localStorage.getItem('ggtech_users')) saveUsers([...DEFAULT_USERS]);
-  if (!localStorage.getItem('ggtech_units')) saveUnits(JSON.parse(JSON.stringify(DEFAULT_UNITS)));
-})();
-
-// ══════════════════════════════════════════════════
-//  SESSION
-// ══════════════════════════════════════════════════
-let currentUser = null;
-
-function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  const { users } = loadData();
-  const found = users.find(x => x.username === u && x.password === p);
-  if (!found) {
-    document.getElementById('loginError').textContent = 'Usuário ou senha incorretos.';
-    return;
-  }
-  currentUser = found;
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('headerUserLabel').textContent =
-    found.label || found.username.toUpperCase() + (found.role === 'admin' ? ' · ADMIN' : ' · TÉCNICO');
-  document.getElementById('adminBar').classList.toggle('hidden', found.role !== 'admin');
-  renderUnits();
+// ═══════════════════════════════
+// RENDER
+// ═══════════════════════════════
+function render(){
+  const c=document.getElementById('unitsContainer');
+  c.innerHTML='';
+  S.units().forEach(u=>c.appendChild(buildUnit(u)));
 }
 
-function doLogout() {
-  currentUser = null;
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-  document.getElementById('loginError').textContent = '';
-}
+function buildUnit(u){
+  const div=document.createElement('div');
+  div.className='unit'+(openUnits[u.key]?' open':'');
+  div.id='unit_'+u.key;
+  const comps=u.computers||[];
+  const ins=u.insumos||[];
+  const low=ins.filter(i=>i.qty<=i.min).length;
+  const isAdmin=CU?.role==='admin';
+  const canEdit=isAdmin||CU?.role==='tech';
+  const tab=openTabs[u.key]||'computers';
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
-});
-
-// ══════════════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════════════
-function renderUnits() {
-  const { units } = loadData();
-  const container = document.getElementById('unitsContainer');
-  container.innerHTML = '';
-
-  units.forEach((unit, ui) => {
-    const div = document.createElement('div');
-    div.className = 'unit';
-    div.id = 'unit_' + unit.key;
-
-    const iconBg = unit.color + '22';
-    const computers = unit.computers || [];
-
-    div.innerHTML = `
-      <div class="unit-header" onclick="toggleUnit('${unit.key}')">
-        <div class="unit-icon" style="background:${iconBg};border:1px solid ${unit.color}44">${unit.icon}</div>
-        <div>
-          <div class="unit-name" style="color:${unit.color}">${unit.name}</div>
-          <div class="unit-meta">${unit.desc || ''}</div>
-        </div>
-        <div class="unit-count">${computers.length} máquina${computers.length !== 1 ? 's' : ''}</div>
-        ${currentUser?.role === 'admin' ? `<button class="btn btn-ghost" style="font-size:10px;padding:4px 10px;margin-right:4px" onclick="event.stopPropagation();deleteUnit('${unit.key}')">✕ Remover</button>` : ''}
-        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
+  div.innerHTML=`
+    <div class="unit-header" onclick="toggleUnit('${u.key}')">
+      <div class="unit-color-bar" style="background:${u.color}"></div>
+      <div class="unit-icon" style="background:${u.color}18;border:1px solid ${u.color}33">${u.icon}</div>
+      <div class="unit-info">
+        <div class="unit-name" style="color:${u.color}">${u.name}</div>
+        <div class="unit-desc">${u.desc||''}</div>
       </div>
-      <div class="unit-body">
-        <div class="computers-grid" id="grid_${unit.key}">
-          ${computers.map(c => renderComputer(unit.key, c)).join('')}
-          ${currentUser?.role === 'admin' ? `
-            <div class="computer-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:120px;opacity:.5"
-              onclick="openAddComputerFor('${unit.key}')">
-              <span style="font-size:28px">+</span>
-            </div>` : ''}
-        </div>
+      <div class="unit-stats">
+        <div class="stat-pill">🖥️ <span>${comps.length}</span></div>
+        <div class="stat-pill" style="${low>0?'border-color:rgba(255,51,85,.35);color:var(--red)':''}">📦 <span>${ins.length}</span>${low>0?' ⚠️'+low:''}</div>
+        ${isAdmin?`<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditUnit('${u.key}')">✏️</button>
+        <button class="btn btn-sm" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="event.stopPropagation();deleteUnit('${u.key}')">✕</button>`:''}
       </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function renderComputer(unitKey, c) {
-  const hasInfo = c.ip || c.serial;
-  return `
-    <div class="computer-card">
-      ${(currentUser?.role === 'admin' || currentUser?.role === 'tech') ? `
-        <button class="btn-edit-id" onclick="openEditId('${unitKey}','${c.key}')">✏️</button>` : ''}
-      <div class="computer-name">🖥️ ${c.name}</div>
-      <div class="computer-anydesk">
-        <span>AnyDesk:</span>
-        <span class="anydesk-id">${c.anydesk || '—'}</span>
+      <div class="chevron-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="unit-body">
+      <div class="tabs">
+        <div class="tab ${tab==='computers'?'active':''}" onclick="switchTab('${u.key}','computers')">🖥️ COMPUTADORES</div>
+        <div class="tab ${tab==='insumos'?'active':''}" onclick="switchTab('${u.key}','insumos')">📦 INSUMOS / TONERS</div>
       </div>
-      ${hasInfo ? `<div class="computer-info">
-        ${c.ip     ? `IP: <span>${c.ip}</span><br>` : ''}
-        ${c.serial ? `S/N: <span>${c.serial}</span><br>` : ''}
-        ${c.obs    ? `<span style="color:#5a6a7a">${c.obs}</span>` : ''}
-      </div>` : (c.obs ? `<div class="computer-info"><span style="color:#5a6a7a">${c.obs}</span></div>` : '')}
-      <button class="btn-connect" onclick="connectAnyDesk('${c.anydesk}')">
-        ⚡ CONECTAR
-      </button>
-      ${currentUser?.role === 'admin' ? `
-        <button class="btn btn-danger" style="width:100%;margin-top:6px;font-size:11px;padding:5px"
-          onclick="deleteComputer('${unitKey}','${c.key}')">✕ Remover</button>` : ''}
+      <div class="tab-content ${tab==='computers'?'active':''}" id="tc_${u.key}_computers">
+        ${buildCompsTab(u,comps,canEdit,isAdmin)}
+      </div>
+      <div class="tab-content ${tab==='insumos'?'active':''}" id="tc_${u.key}_insumos">
+        ${buildInsTab(u,ins,canEdit,isAdmin)}
+      </div>
     </div>
   `;
+  return div;
 }
 
-function toggleUnit(key) {
-  document.getElementById('unit_' + key)?.classList.toggle('open');
+function buildCompsTab(u,comps,canEdit,isAdmin){
+  if(!comps.length&&!isAdmin) return `<div class="empty-state"><div class="icon">🖥️</div>NENHUM COMPUTADOR CADASTRADO</div>`;
+  return `<div class="comp-grid">
+    ${comps.map(c=>buildCompCard(u,c,canEdit,isAdmin)).join('')}
+    ${isAdmin?`<div class="comp-card-add" onclick="openAddComp('${u.key}')"><div class="comp-card-add-icon">＋</div><div class="comp-card-add-label">NOVO COMPUTADOR</div></div>`:''}
+  </div>`;
 }
 
-// ══════════════════════════════════════════════════
-//  ANYDESK CONNECT
-// ══════════════════════════════════════════════════
-function connectAnyDesk(id) {
-  if (!id || id === '—') { showToast('ID AnyDesk não configurado!'); return; }
-  const clean = id.replace(/\s/g, '');
-  // tenta abrir o protocolo nativo do AnyDesk
-  const link = `anydesk:${clean}`;
-  window.location.href = link;
-  showToast(`Conectando ao AnyDesk ${id}…`);
-}
-
-// ══════════════════════════════════════════════════
-//  EDITAR ANYDESK ID
-// ══════════════════════════════════════════════════
-function openEditId(unitKey, compKey) {
-  const { units } = loadData();
-  const unit = units.find(u => u.key === unitKey);
-  const comp = unit?.computers.find(c => c.key === compKey);
-  if (!comp) return;
-  document.getElementById('editIdUnitKey').value = unitKey;
-  document.getElementById('editIdCompKey').value = compKey;
-  document.getElementById('editIdMachine').value = comp.name;
-  document.getElementById('editIdValue').value = comp.anydesk || '';
-  openModal('modalEditId');
-}
-
-function saveAnyDeskId() {
-  const unitKey = document.getElementById('editIdUnitKey').value;
-  const compKey = document.getElementById('editIdCompKey').value;
-  const newId   = document.getElementById('editIdValue').value.trim();
-  const data = loadData();
-  const unit = data.units.find(u => u.key === unitKey);
-  const comp = unit?.computers.find(c => c.key === compKey);
-  if (!comp) return;
-  comp.anydesk = newId;
-  saveUnits(data.units);
-  closeModal('modalEditId');
-  renderUnits();
-  showToast('ID AnyDesk atualizado!');
-}
-
-// ══════════════════════════════════════════════════
-//  ADD UNIT
-// ══════════════════════════════════════════════════
-function addUnit() {
-  const name  = document.getElementById('newUnitName').value.trim();
-  const desc  = document.getElementById('newUnitDesc').value.trim();
-  const icon  = document.getElementById('newUnitIcon').value;
-  const color = document.getElementById('newUnitColor').value;
-  if (!name) { showToast('Informe o nome da unidade!'); return; }
-  const data = loadData();
-  const key = 'unit_' + Date.now();
-  data.units.push({ key, name: name.toUpperCase(), desc, icon, color, computers: [] });
-  saveUnits(data.units);
-  closeModal('modalAddUnit');
-  renderUnits();
-  showToast('Unidade criada!');
-  document.getElementById('newUnitName').value = '';
-  document.getElementById('newUnitDesc').value = '';
-}
-
-function deleteUnit(key) {
-  if (!confirm('Remover esta unidade e todos os computadores?')) return;
-  const data = loadData();
-  data.units = data.units.filter(u => u.key !== key);
-  saveUnits(data.units);
-  renderUnits();
-  showToast('Unidade removida.');
-}
-
-// ══════════════════════════════════════════════════
-//  ADD COMPUTER
-// ══════════════════════════════════════════════════
-function populateUnitSelect() {
-  const { units } = loadData();
-  const sel = document.getElementById('newCompUnit');
-  sel.innerHTML = units.map(u => `<option value="${u.key}">${u.name}</option>`).join('');
-}
-
-function openAddComputerFor(unitKey) {
-  populateUnitSelect();
-  document.getElementById('newCompUnit').value = unitKey;
-  openModal('modalAddComputer');
-}
-
-function addComputer() {
-  const unitKey = document.getElementById('newCompUnit').value;
-  const name    = document.getElementById('newCompName').value.trim();
-  const anydesk = document.getElementById('newCompAnydesk').value.trim();
-  const ip      = document.getElementById('newCompIp').value.trim();
-  const serial  = document.getElementById('newCompSerial').value.trim();
-  const obs     = document.getElementById('newCompObs').value.trim();
-  if (!name) { showToast('Informe o nome da máquina!'); return; }
-  const data = loadData();
-  const unit = data.units.find(u => u.key === unitKey);
-  if (!unit) return;
-  unit.computers.push({ key: 'c' + Date.now(), name: name.toUpperCase(), anydesk, ip, serial, obs });
-  saveUnits(data.units);
-  closeModal('modalAddComputer');
-  renderUnits();
-  showToast('Computador adicionado!');
-  ['newCompName','newCompAnydesk','newCompIp','newCompSerial','newCompObs'].forEach(id => document.getElementById(id).value = '');
-}
-
-function deleteComputer(unitKey, compKey) {
-  if (!confirm('Remover este computador?')) return;
-  const data = loadData();
-  const unit = data.units.find(u => u.key === unitKey);
-  if (!unit) return;
-  unit.computers = unit.computers.filter(c => c.key !== compKey);
-  saveUnits(data.units);
-  renderUnits();
-  showToast('Computador removido.');
-}
-
-// ══════════════════════════════════════════════════
-//  USERS
-// ══════════════════════════════════════════════════
-function renderUsersList() {
-  const { users } = loadData();
-  const el = document.getElementById('usersList');
-  el.innerHTML = users.map(u => `
-    <div class="user-row">
-      <span style="color:var(--white);font-weight:600">${u.username}</span>
-      <span class="user-role ${u.role === 'admin' ? 'role-admin' : 'role-tech'}">
-        ${u.role === 'admin' ? 'ADMIN' : 'TÉCNICO'}
-      </span>
-      ${u.label ? `<span style="color:var(--muted);font-size:11px">${u.label}</span>` : ''}
-      <div class="user-actions">
-        ${u.username !== 'admin' ? `<button class="btn btn-danger" style="padding:4px 10px;font-size:10px" onclick="deleteUser('${u.username}')">✕</button>` : ''}
+function buildCompCard(u,c,canEdit,isAdmin){
+  const hasId=c.anydesk&&c.anydesk.trim();
+  return `<div class="comp-card">
+    <div class="comp-status"></div>
+    <div class="comp-name">${c.name}</div>
+    <div class="comp-meta">
+      <div class="comp-meta-row">
+        <span class="comp-meta-label">ANYDESK</span>
+        <span class="comp-meta-val">
+          <span class="comp-anydesk-id">${hasId?c.anydesk:'—'}</span>
+          ${hasId?`<button class="copy-btn" title="Copiar ID" onclick="copyText('${c.anydesk.replace(/\s/g,'')}','ID copiado!')">📋</button>`:''}
+        </span>
       </div>
+      ${c.ip?`<div class="comp-meta-row"><span class="comp-meta-label">IP</span><span class="comp-meta-val">${c.ip}<button class="copy-btn" onclick="copyText('${c.ip}','IP copiado!')">📋</button></span></div>`:''}
+      ${c.serial?`<div class="comp-meta-row"><span class="comp-meta-label">S/N</span><span class="comp-meta-val">${c.serial}</span></div>`:''}
+      ${c.obs?`<div style="font-size:11px;color:var(--text2);margin-top:6px">${c.obs}</div>`:''}
     </div>
-  `).join('');
+    <div class="comp-actions">
+      <button class="btn-connect-big" onclick="openConnect('${u.key}','${c.key}')">⚡ CONECTAR</button>
+      ${canEdit?`<div class="comp-sub-actions">
+        <button class="btn btn-ghost" onclick="openEditComp('${u.key}','${c.key}')">✏️ Editar</button>
+        ${isAdmin?`<button class="btn" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteComp('${u.key}','${c.key}')">✕</button>`:''}
+      </div>`:''}
+    </div>
+  </div>`;
 }
 
-function addUser() {
-  const name = document.getElementById('newUserName').value.trim();
-  const pass = document.getElementById('newUserPass').value;
-  const role = document.getElementById('newUserRole').value;
-  if (!name || !pass) { showToast('Preencha usuário e senha!'); return; }
-  const data = loadData();
-  if (data.users.find(u => u.username === name)) { showToast('Usuário já existe!'); return; }
-  data.users.push({ username: name, password: pass, role, label: name.toUpperCase() });
-  saveUsers(data.users);
-  renderUsersList();
-  document.getElementById('newUserName').value = '';
-  document.getElementById('newUserPass').value = '';
-  showToast('Usuário criado!');
+function buildInsTab(u,ins,canEdit,isAdmin){
+  if(!ins.length&&!isAdmin) return `<div class="empty-state"><div class="icon">📦</div>NENHUM INSUMO CADASTRADO</div>`;
+  return `<div class="insumos-grid">
+    ${ins.map(i=>buildInsumoCard(u,i,canEdit,isAdmin)).join('')}
+    ${isAdmin?`<div class="comp-card-add" onclick="openAddInsumo('${u.key}')"><div class="comp-card-add-icon">＋</div><div class="comp-card-add-label">NOVO INSUMO</div></div>`:''}
+  </div>`;
 }
 
-function deleteUser(username) {
-  if (!confirm(`Remover usuário "${username}"?`)) return;
-  const data = loadData();
-  data.users = data.users.filter(u => u.username !== username);
-  saveUsers(data.users);
-  renderUsersList();
-  showToast('Usuário removido.');
+function buildInsumoCard(u,i,canEdit,isAdmin){
+  const max=Math.max(i.min*3,6);
+  const pct=Math.min(100,Math.round((i.qty/max)*100));
+  const qc=i.qty===0?'qty-low':i.qty<=i.min?'qty-warn':'qty-ok';
+  const bc=i.qty===0?'var(--red)':i.qty<=i.min?'var(--yellow)':'var(--green)';
+  return `<div class="insumo-card">
+    <div>
+      <div class="insumo-name">${i.name}</div>
+      ${i.model?`<div class="insumo-model">${i.model}</div>`:''}
+    </div>
+    <div class="insumo-qty-wrap">
+      <span class="insumo-qty-label">ESTOQUE</span>
+      <span class="insumo-qty ${qc}">${i.qty}</span>
+    </div>
+    <div class="stock-bar"><div class="stock-fill" style="width:${pct}%;background:${bc}"></div></div>
+    <div class="insumo-threshold">Alerta: ≤ ${i.min} un. ${i.qty===0?'🔴 ESGOTADO':i.qty<=i.min?'⚠️ ESTOQUE BAIXO':''}</div>
+    ${i.obs?`<div style="font-size:11px;color:var(--text2)">${i.obs}</div>`:''}
+    ${canEdit?`<div class="qty-stepper">
+      <button class="qty-step-btn" onclick="adjustQty('${u.key}','${i.key}',-1)">−</button>
+      <span class="qty-current ${qc}">${i.qty}</span>
+      <button class="qty-step-btn" onclick="adjustQty('${u.key}','${i.key}',1)">+</button>
+    </div>
+    ${isAdmin?`<div class="insumo-edit-row">
+      <button class="btn btn-ghost" onclick="openEditInsumo('${u.key}','${i.key}')">✏️ Editar</button>
+      <button class="btn" style="background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteInsumo('${u.key}','${i.key}')">✕</button>
+    </div>`:''}
+    `:''}
+  </div>`;
 }
 
-// ══════════════════════════════════════════════════
-//  MODAIS
-// ══════════════════════════════════════════════════
-function openModal(id) {
-  if (id === 'modalAddComputer') populateUnitSelect();
-  if (id === 'modalUsers') renderUsersList();
-  document.getElementById(id).classList.add('show');
+function toggleUnit(k){
+  openUnits[k]=!openUnits[k];
+  document.getElementById('unit_'+k)?.classList.toggle('open',!!openUnits[k]);
 }
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove('show');
+function switchTab(uk,tab){
+  openTabs[uk]=tab;
+  openUnits[uk]=true;
+  const el=document.getElementById('unit_'+uk);
+  if(!el)return;
+  el.classList.add('open');
+  el.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='computers'?0:1)));
+  el.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.querySelector('#tc_'+uk+'_'+tab)?.classList.add('active');
 }
 
-// fechar clicando fora
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay) overlay.classList.remove('show');
+function restoreOpen(){
+  const units=S.units();
+  units.forEach(u=>{
+    const el=document.getElementById('unit_'+u.key);
+    if(!el)return;
+    if(openUnits[u.key])el.classList.add('open');
+    const tab=openTabs[u.key];
+    if(tab){
+      el.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='computers'?0:1)));
+      el.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+      el.querySelector('#tc_'+u.key+'_'+tab)?.classList.add('active');
+    }
   });
+}
+
+// ═══════════════════════════════
+// CONNECT
+// ═══════════════════════════════
+let _cid='';
+function openConnect(uk,ck){
+  const unit=S.units().find(u=>u.key===uk);
+  const comp=unit?.computers.find(c=>c.key===ck);
+  if(!comp)return;
+  document.getElementById('conn_name').textContent=comp.name||'—';
+  document.getElementById('conn_unit').textContent=unit.name||'—';
+  document.getElementById('conn_ip').textContent=comp.ip||'Não informado';
+  document.getElementById('conn_serial').textContent=comp.serial||'Não informado';
+  const raw=(comp.anydesk||'').replace(/\s/g,'');
+  document.getElementById('conn_id').textContent=comp.anydesk||'— ID não configurado —';
+  _cid=raw;
+  openModal('m_connect');
+}
+function doConnect(){
+  if(!_cid){toast('Configure o ID AnyDesk primeiro!','⚠️','t-yellow');return;}
+  // cria um link temporário e dispara
+  const a=document.createElement('a');
+  a.href='anydesk:'+_cid;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Abrindo AnyDesk…','⚡','t-blue');
+}
+function copyAnyDeskId(){
+  if(!_cid){toast('Nenhum ID para copiar!','⚠️','t-yellow');return;}
+  copyText(_cid,'ID AnyDesk copiado!');
+}
+
+// ═══════════════════════════════
+// COMPUTADORES
+// ═══════════════════════════════
+function openEditComp(uk,ck){
+  const unit=S.units().find(u=>u.key===uk);
+  const comp=unit?.computers.find(c=>c.key===ck);
+  if(!comp)return;
+  const isAdmin=CU?.role==='admin';
+  document.getElementById('editComp_uk').value=uk;
+  document.getElementById('editComp_ck').value=ck;
+  document.getElementById('editComp_title').textContent=comp.name;
+  document.getElementById('ec_name').value=comp.name||'';
+  document.getElementById('ec_anydesk').value=comp.anydesk||'';
+  document.getElementById('ec_ip').value=comp.ip||'';
+  document.getElementById('ec_serial').value=comp.serial||'';
+  document.getElementById('ec_obs').value=comp.obs||'';
+  // tech só edita nome e anydesk
+  ['ec_ip','ec_serial','ec_obs'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.disabled=!isAdmin;
+    el.closest('.field').style.opacity=isAdmin?'1':'.45';
+  });
+  openModal('m_editComp');
+}
+function saveComp(){
+  const uk=document.getElementById('editComp_uk').value;
+  const ck=document.getElementById('editComp_ck').value;
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  const comp=unit?.computers.find(c=>c.key===ck);
+  if(!comp)return;
+  const n=document.getElementById('ec_name').value.trim();
+  comp.name=(n||comp.name).toUpperCase();
+  comp.anydesk=document.getElementById('ec_anydesk').value.trim();
+  if(CU?.role==='admin'){
+    comp.ip=document.getElementById('ec_ip').value.trim();
+    comp.serial=document.getElementById('ec_serial').value.trim();
+    comp.obs=document.getElementById('ec_obs').value.trim();
+  }
+  S.saveN(data);
+  closeModal('m_editComp');
+  render();restoreOpen();
+  toast('Computador salvo!','✅','t-green');
+}
+function openAddComp(preUk){
+  const units=S.units();
+  const sel=document.getElementById('ac_unit');
+  sel.innerHTML=units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
+  if(preUk)sel.value=preUk;
+  ['ac_name','ac_anydesk','ac_ip','ac_serial','ac_obs'].forEach(id=>document.getElementById(id).value='');
+  openModal('m_addComp');
+}
+function addComp(){
+  const uk=document.getElementById('ac_unit').value;
+  const name=document.getElementById('ac_name').value.trim();
+  if(!name){toast('Informe o nome da máquina!','⚠️','t-yellow');return;}
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  if(!unit)return;
+  if(!unit.computers)unit.computers=[];
+  unit.computers.push({
+    key:'c'+Date.now(),name:name.toUpperCase(),
+    anydesk:document.getElementById('ac_anydesk').value.trim(),
+    ip:document.getElementById('ac_ip').value.trim(),
+    serial:document.getElementById('ac_serial').value.trim(),
+    obs:document.getElementById('ac_obs').value.trim()
+  });
+  S.saveN(data);closeModal('m_addComp');
+  openUnits[uk]=true;openTabs[uk]='computers';
+  render();restoreOpen();
+  toast('Computador adicionado!','✅','t-green');
+}
+function deleteComp(uk,ck){
+  if(!confirm('Remover este computador?'))return;
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  if(!unit)return;
+  unit.computers=unit.computers.filter(c=>c.key!==ck);
+  S.saveN(data);render();restoreOpen();
+  toast('Removido.','🗑️','t-red');
+}
+
+// ═══════════════════════════════
+// UNIDADES
+// ═══════════════════════════════
+function addUnit(){
+  const name=document.getElementById('au_name').value.trim();
+  if(!name){toast('Informe o nome!','⚠️','t-yellow');return;}
+  const data=S.units();
+  const key='u'+Date.now();
+  data.push({key,name:name.toUpperCase(),desc:document.getElementById('au_desc').value.trim(),
+    icon:document.getElementById('au_icon').value,color:document.getElementById('au_color').value,
+    computers:[],insumos:[]});
+  S.saveN(data);closeModal('m_addUnit');
+  ['au_name','au_desc'].forEach(id=>document.getElementById(id).value='');
+  openUnits[key]=true;render();restoreOpen();
+  toast('Unidade criada!','✅','t-green');
+}
+function openEditUnit(uk){
+  const unit=S.units().find(u=>u.key===uk);
+  if(!unit)return;
+  document.getElementById('eu_key').value=uk;
+  document.getElementById('eu_name').value=unit.name;
+  document.getElementById('eu_desc').value=unit.desc||'';
+  document.getElementById('eu_icon').value=unit.icon;
+  document.getElementById('eu_color').value=unit.color;
+  openModal('m_editUnit');
+}
+function saveUnit(){
+  const uk=document.getElementById('eu_key').value;
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  if(!unit)return;
+  const n=document.getElementById('eu_name').value.trim();
+  unit.name=(n||unit.name).toUpperCase();
+  unit.desc=document.getElementById('eu_desc').value.trim();
+  unit.icon=document.getElementById('eu_icon').value;
+  unit.color=document.getElementById('eu_color').value;
+  S.saveN(data);closeModal('m_editUnit');render();restoreOpen();
+  toast('Unidade salva!','✅','t-green');
+}
+function deleteUnit(uk){
+  if(!confirm('Remover esta unidade e todos os dados?'))return;
+  S.saveN(S.units().filter(u=>u.key!==uk));
+  render();toast('Unidade removida.','🗑️','t-red');
+}
+
+// ═══════════════════════════════
+// INSUMOS
+// ═══════════════════════════════
+function openAddInsumo(preUk){
+  const units=S.units();
+  const sel=document.getElementById('ei_unit');
+  sel.innerHTML=units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
+  if(preUk)sel.value=preUk;
+  sel.disabled=false;
+  document.getElementById('ei_uk').value='';document.getElementById('ei_ik').value='';
+  document.getElementById('ei_title').textContent='Novo Insumo';
+  ['ei_name','ei_model','ei_obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ei_qty').value='0';document.getElementById('ei_min').value='2';
+  openModal('m_editInsumo');
+}
+function openEditInsumo(uk,ik){
+  const unit=S.units().find(u=>u.key===uk);
+  const ins=unit?.insumos?.find(i=>i.key===ik);
+  if(!ins)return;
+  const units=S.units();
+  const sel=document.getElementById('ei_unit');
+  sel.innerHTML=units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
+  sel.value=uk;sel.disabled=true;
+  document.getElementById('ei_uk').value=uk;document.getElementById('ei_ik').value=ik;
+  document.getElementById('ei_title').textContent='Editar: '+ins.name;
+  document.getElementById('ei_name').value=ins.name||'';
+  document.getElementById('ei_model').value=ins.model||'';
+  document.getElementById('ei_qty').value=ins.qty??0;
+  document.getElementById('ei_min').value=ins.min??2;
+  document.getElementById('ei_obs').value=ins.obs||'';
+  openModal('m_editInsumo');
+}
+function saveInsumo(){
+  const uk=document.getElementById('ei_uk').value;
+  const ik=document.getElementById('ei_ik').value;
+  const name=document.getElementById('ei_name').value.trim();
+  if(!name){toast('Informe o nome do insumo!','⚠️','t-yellow');return;}
+  const data=S.units();
+  if(ik){
+    const unit=data.find(u=>u.key===uk);
+    const ins=unit?.insumos?.find(i=>i.key===ik);
+    if(!ins)return;
+    ins.name=name;ins.model=document.getElementById('ei_model').value.trim();
+    ins.qty=parseInt(document.getElementById('ei_qty').value)||0;
+    ins.min=parseInt(document.getElementById('ei_min').value)||0;
+    ins.obs=document.getElementById('ei_obs').value.trim();
+  }else{
+    const selUk=document.getElementById('ei_unit').value;
+    const unit=data.find(u=>u.key===selUk);
+    if(!unit)return;
+    if(!unit.insumos)unit.insumos=[];
+    unit.insumos.push({key:'i'+Date.now(),name,
+      model:document.getElementById('ei_model').value.trim(),
+      qty:parseInt(document.getElementById('ei_qty').value)||0,
+      min:parseInt(document.getElementById('ei_min').value)||0,
+      obs:document.getElementById('ei_obs').value.trim()});
+    openUnits[selUk]=true;openTabs[selUk]='insumos';
+  }
+  S.saveN(data);closeModal('m_editInsumo');render();restoreOpen();
+  toast('Insumo salvo!','✅','t-green');
+}
+function adjustQty(uk,ik,delta){
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  const ins=unit?.insumos?.find(i=>i.key===ik);
+  if(!ins)return;
+  ins.qty=Math.max(0,(ins.qty||0)+delta);
+  S.saveN(data);render();restoreOpen();
+  if(ins.qty===0)toast('⚠️ '+ins.name+' ESGOTADO!','🔴','t-red');
+  else if(ins.qty<=ins.min)toast('Estoque baixo: '+ins.name,'⚠️','t-yellow');
+}
+function deleteInsumo(uk,ik){
+  if(!confirm('Remover este insumo?'))return;
+  const data=S.units();
+  const unit=data.find(u=>u.key===uk);
+  if(!unit)return;
+  unit.insumos=unit.insumos.filter(i=>i.key!==ik);
+  S.saveN(data);render();restoreOpen();
+  toast('Insumo removido.','🗑️','t-red');
+}
+
+// ═══════════════════════════════
+// USUÁRIOS
+// ═══════════════════════════════
+function renderUsers(){
+  const users=S.users();
+  document.getElementById('usersList').innerHTML=users.map(u=>`
+    <div class="user-row">
+      <span class="user-uname">${u.username}</span>
+      <span class="h-badge ${u.role==='admin'?'badge-admin':'badge-tech'}">${u.role==='admin'?'ADMIN':'TÉCNICO'}</span>
+      <div class="user-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openChangePass('${u.username}')">🔑</button>
+        ${u.username!=='admin'?`<button class="btn btn-sm" style="background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteUser('${u.username}')">✕</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function addUser(){
+  const name=document.getElementById('nu_name').value.trim();
+  const pass=document.getElementById('nu_pass').value;
+  const role=document.getElementById('nu_role').value;
+  if(!name||!pass){toast('Preencha todos os campos!','⚠️','t-yellow');return;}
+  const users=S.users();
+  if(users.find(u=>u.username===name)){toast('Usuário já existe!','⚠️','t-yellow');return;}
+  users.push({username:name,password:pass,role});
+  S.saveU(users);
+  document.getElementById('nu_name').value='';document.getElementById('nu_pass').value='';
+  renderUsers();toast('Usuário criado!','✅','t-green');
+}
+function deleteUser(name){
+  if(!confirm(`Remover "${name}"?`))return;
+  S.saveU(S.users().filter(u=>u.username!==name));
+  renderUsers();toast('Removido.','🗑️','t-red');
+}
+function openChangePass(username){
+  document.getElementById('cp_username').value=username;
+  document.getElementById('cp_display').value=username;
+  document.getElementById('cp_pass').value='';
+  document.getElementById('cp_pass2').value='';
+  openModal('m_changePass');
+}
+function doChangePass(){
+  const username=document.getElementById('cp_username').value;
+  const p1=document.getElementById('cp_pass').value;
+  const p2=document.getElementById('cp_pass2').value;
+  if(!p1){toast('Digite a nova senha!','⚠️','t-yellow');return;}
+  if(p1!==p2){toast('As senhas não coincidem!','⚠️','t-yellow');return;}
+  const users=S.users();
+  const u=users.find(x=>x.username===username);
+  if(!u)return;
+  u.password=p1;S.saveU(users);
+  closeModal('m_changePass');toast('Senha alterada!','✅','t-green');
+}
+
+// ═══════════════════════════════
+// MODAIS
+// ═══════════════════════════════
+function openModal(id){
+  if(id==='m_users')renderUsers();
+  document.getElementById(id)?.classList.add('show');
+}
+function closeModal(id){document.getElementById(id)?.classList.remove('show')}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show')});
 });
 
-// ══════════════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════════════
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+// ═══════════════════════════════
+// UTILS
+// ═══════════════════════════════
+function copyText(text,msg){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast(msg||'Copiado!','📋','t-blue')).catch(()=>fallbackCopy(text,msg));
+  }else{fallbackCopy(text,msg);}
+}
+function fallbackCopy(text,msg){
+  const el=document.createElement('textarea');
+  el.value=text;el.style.cssText='position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(el);el.focus();el.select();
+  try{document.execCommand('copy');toast(msg||'Copiado!','📋','t-blue');}catch{}
+  document.body.removeChild(el);
+}
+let _tt;
+function toast(msg,icon,cls){
+  const el=document.getElementById('toast');
+  el.className='toast '+(cls||'t-blue');
+  document.getElementById('toast_msg').textContent=msg;
+  document.getElementById('toast_icon').textContent=icon||'✅';
+  el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3200);
 }
 </script>
 </body>
