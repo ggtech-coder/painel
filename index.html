@@ -199,33 +199,36 @@ main.show{display:block}
 .empty-state .icon{font-size:36px;margin-bottom:12px;opacity:.4}
 </style>
 
-<link rel="stylesheet" href="css/responsividade.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="assets/favicon.ico">
 </head>
 <body>
-<div class="dashboard-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:25px;">
+<div class="dashboard-grid">
 
-  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
-    <h3>Total Unidades</h3>
-    <span id="dashUnits" style="font-size:42px;font-weight:bold;">0</span>
+  <div class="dash-card">
+    <div class="dash-title">UNIDADES</div>
+    <div class="dash-value" id="dashUnits">0</div>
   </div>
 
-  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
-    <h3>Alertas</h3>
-    <span id="dashAlerts" style="font-size:42px;font-weight:bold;">0</span>
+  <div class="dash-card">
+    <div class="dash-title">COMPUTADORES</div>
+    <div class="dash-value" id="dashPCs">0</div>
   </div>
 
-  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
-    <h3>Sistema</h3>
-    <span style="font-size:24px;font-weight:bold;">ONLINE</span>
+  <div class="dash-card">
+    <div class="dash-title">ALERTAS</div>
+    <div class="dash-value" id="dashAlerts">0</div>
   </div>
 
+</div>
+
+<div style="margin-bottom:20px;">
+  <button class="export-btn" onclick="exportInventory()">
+    Exportar Inventário
+  </button>
 </div>
 
 <div id="alertsBox"></div>
-
-<div style="margin-bottom:25px;">
-  <button onclick="exportInventory()">Exportar Inventário</button>
-</div>
 
 
 <div id="loadingScreen">
@@ -935,24 +938,8 @@ window.toast=(msg,icon,cls)=>{
 boot();
 </script>
 
-<script src="js/logs.js"></script>
-<script src="js/alertas.js"></script>
-<script src="js/exportacao.js"></script>
-
-
-<script>
-window.addEventListener('load',()=>{
-  try{
-    if(window.generateAlerts){
-      setTimeout(()=>generateAlerts(),1200);
-    }
-  }catch(e){
-    console.error(e);
-  }
-});
-</script>
+<script src="js/dashboard.js"></script>
 </body>
-
 </html>
 HTMLEOF
 echo "TAMANHO: $(wc -c < /mnt/user-data/outputs/ggtech_painel.html) bytes"
