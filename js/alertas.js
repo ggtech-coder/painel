@@ -37,4 +37,46 @@ window.generateAlerts = function(){
     console.error(e);
   }
 
+  window.updateDashboard = function(){
+
+  try{
+
+    if(!window._units) return;
+
+    const totalUnits = _units.length;
+
+    let totalAlerts = 0;
+    let totalComputers = 0;
+
+    _units.forEach(u=>{
+
+      totalComputers += (u.computadores || []).length;
+
+      (u.insumos || []).forEach(i=>{
+
+        if(Number(i.qty || 0) <= Number(i.min || 5)){
+          totalAlerts++;
+        }
+
+      });
+
+    });
+
+    const unitsEl = document.getElementById('dashUnits');
+    const alertsEl = document.getElementById('dashAlerts');
+
+    if(unitsEl){
+      unitsEl.innerText = totalUnits;
+    }
+
+    if(alertsEl){
+      alertsEl.innerText = totalAlerts;
+    }
+
+  }catch(e){
+    console.error(e);
+  }
+
+}
+
 }
