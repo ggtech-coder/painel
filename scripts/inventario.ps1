@@ -1,4 +1,3 @@
-# INVENTÁRIO AUTOMÁTICO WINDOWS
 
 $pc = $env:COMPUTERNAME
 $user = $env:USERNAME
