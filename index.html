@@ -2,6 +2,7 @@ cat > /mnt/user-data/outputs/ggtech_painel.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <link rel="stylesheet" href="css/responsividade.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GG TECH · Painel de Acesso Remoto</title>
@@ -973,6 +974,9 @@ window.toast=(msg,icon,cls)=>{
 /* ══════ INICIAR ══════ */
 boot();
 </script>
+  <script src="js/logs.js"></script>
+<script src="js/alertas.js"></script>
+<script src="js/exportacao.js"></script>
 </body>
 </html>
 HTMLEOF
