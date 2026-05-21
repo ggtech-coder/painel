@@ -1,48 +1,40 @@
-// ===== ALERTAS AUTOMÁTICOS =====
 
-function generateAlerts(){
+window.generateAlerts = function(){
 
-  const alerts = [];
+  try{
 
-  _units.forEach(u=>{
+    const el = document.getElementById('alertsBox');
 
-    (u.insumos||[]).forEach(i=>{
+    if(!el || !window._units) return;
 
-      if(Number(i.qty)<=Number(i.min || 5)){
-        alerts.push({
-          type:'estoque',
-          text:`Estoque baixo: ${i.nome}`
-        });
-      }
+    const alerts = [];
 
-    });
+    _units.forEach(u=>{
 
-    (u.computadores||[]).forEach(c=>{
+      (u.insumos || []).forEach(i=>{
 
-      if(c.status==='offline'){
-        alerts.push({
-          type:'offline',
-          text:`Computador offline: ${c.nome}`
-        });
-      }
+        if(Number(i.qty || 0) <= Number(i.min || 5)){
+          alerts.push(`⚠ Estoque baixo: ${i.nome || 'Insumo'}`);
+        }
+
+      });
 
     });
 
-  });
+    el.innerHTML = alerts.map(a=>`
+      <div style="
+        padding:12px;
+        margin-bottom:10px;
+        border-radius:12px;
+        background:rgba(255,140,0,.12);
+        border:1px solid rgba(255,140,0,.35);
+      ">
+        ${a}
+      </div>
+    `).join('');
 
-  renderAlerts(alerts);
-}
-
-function renderAlerts(alerts){
-
-  const el = document.getElementById('alertsBox');
-
-  if(!el) return;
-
-  el.innerHTML = alerts.map(a=>`
-    <div class="alert-card">
-      ⚠ ${a.text}
-    </div>
-  `).join('');
+  }catch(e){
+    console.error(e);
+  }
 
 }
