@@ -649,7 +649,7 @@ function buildCompCard(u,c,canEdit,isAdmin){
       <button class="btn-connect-big" onclick="openConnect('${u.key}','${c.key}')">⚡ CONECTAR</button>
       ${canEdit?`<div class="comp-sub-actions">
         <button class="btn btn-ghost" onclick="openEditComp('${u.key}','${c.key}')">✏️ Editar</button>
-        ${isAdmin?`<button class="btn" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteComp('${u.key}','${c.key}')">✕</button>`:''}
+        ${canEdit?`<button class="btn" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteComp('${u.key}','${c.key}')">✕</button>`:''}
       </div>`:''}
     </div>
   </div>`;
@@ -659,7 +659,7 @@ function buildInsTab(u,ins,canEdit,isAdmin){
   if(!ins.length&&!isAdmin) return '<div class="empty-state"><div class="icon">📦</div>NENHUM INSUMO CADASTRADO</div>';
   return `<div class="insumos-grid">
     ${ins.map(i=>buildInsumoCard(u,i,canEdit,isAdmin)).join('')}
-    ${isAdmin?`<button class="card-add" onclick="openAddInsumo('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO INSUMO</div></button>`:''}
+    ${canEdit?`<button class="card-add" onclick="openAddInsumo('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO INSUMO</div></button>`:''}
   </div>`;
 }
 
