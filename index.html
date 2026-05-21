@@ -2,7 +2,6 @@ cat > /mnt/user-data/outputs/ggtech_painel.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="stylesheet" href="css/responsividade.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GG TECH · Painel de Acesso Remoto</title>
@@ -199,8 +198,35 @@ main.show{display:block}
 .empty-state{text-align:center;padding:40px;color:var(--text2);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px}
 .empty-state .icon{font-size:36px;margin-bottom:12px;opacity:.4}
 </style>
+
+<link rel="stylesheet" href="css/responsividade.css">
 </head>
 <body>
+<div class="dashboard-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:25px;">
+
+  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
+    <h3>Total Unidades</h3>
+    <span id="dashUnits" style="font-size:42px;font-weight:bold;">0</span>
+  </div>
+
+  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
+    <h3>Alertas</h3>
+    <span id="dashAlerts" style="font-size:42px;font-weight:bold;">0</span>
+  </div>
+
+  <div class="dash-card" style="padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
+    <h3>Sistema</h3>
+    <span style="font-size:24px;font-weight:bold;">ONLINE</span>
+  </div>
+
+</div>
+
+<div id="alertsBox"></div>
+
+<div style="margin-bottom:25px;">
+  <button onclick="exportInventory()">Exportar Inventário</button>
+</div>
+
 
 <div id="loadingScreen">
   <div class="loading-brand">GG TECH</div>
@@ -462,18 +488,6 @@ const DEFAULT_USERS = [{username:'admin',password:'GGtech@2024',role:'admin'}];
 let _units = [], _users = [], CU = null;
 const openUnits = {}, openTabs = {};
 
-function isAdmin(){
-  return CU?.role === 'admin';
-}
-
-function isTech(){
-  return CU?.role === 'tech';
-}
-
-function canEditData(){
-  return isAdmin() || isTech();
-}
-
 /* ══════════════════════════════════════════
    FIRESTORE — refs e helpers
 ══════════════════════════════════════════ */
@@ -593,9 +607,7 @@ function buildUnit(u) {
   div.id = 'unit_'+u.key;
   const comps=u.computers||[], ins=u.insumos||[];
   const low=ins.filter(i=>i.qty<=i.min).length;
-  const isAdmin = CU?.role === 'admin';
-const isTech  = CU?.role === 'tech';
-const canEdit = isAdmin || isTech;
+  const isAdmin=CU?.role==='admin', canEdit=isAdmin||CU?.role==='tech';
   const tab=openTabs[u.key]||'computers';
   div.innerHTML=`
     <div class="unit-header" onclick="toggleUnit('${u.key}')">
@@ -628,7 +640,7 @@ function buildCompsTab(u,comps,canEdit,isAdmin){
   if(!comps.length&&!isAdmin) return '<div class="empty-state"><div class="icon">🖥️</div>NENHUM COMPUTADOR CADASTRADO</div>';
   return `<div class="comp-grid">
     ${comps.map(c=>buildCompCard(u,c,canEdit,isAdmin)).join('')}
-    ${canEdit?`<button class="card-add" onclick="openAddComp('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO COMPUTADOR</div></button>`:''}
+    ${isAdmin?`<button class="card-add" onclick="openAddComp('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO COMPUTADOR</div></button>`:''}
   </div>`;
 }
 
@@ -650,7 +662,7 @@ function buildCompCard(u,c,canEdit,isAdmin){
       <button class="btn-connect-big" onclick="openConnect('${u.key}','${c.key}')">⚡ CONECTAR</button>
       ${canEdit?`<div class="comp-sub-actions">
         <button class="btn btn-ghost" onclick="openEditComp('${u.key}','${c.key}')">✏️ Editar</button>
-        ${canEdit?`<button class="btn" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteComp('${u.key}','${c.key}')">✕</button>`:''}
+        ${isAdmin?`<button class="btn" style="background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteComp('${u.key}','${c.key}')">✕</button>`:''}
       </div>`:''}
     </div>
   </div>`;
@@ -660,7 +672,7 @@ function buildInsTab(u,ins,canEdit,isAdmin){
   if(!ins.length&&!isAdmin) return '<div class="empty-state"><div class="icon">📦</div>NENHUM INSUMO CADASTRADO</div>';
   return `<div class="insumos-grid">
     ${ins.map(i=>buildInsumoCard(u,i,canEdit,isAdmin)).join('')}
-    ${canEdit?`<button class="card-add" onclick="openAddInsumo('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO INSUMO</div></button>`:''}
+    ${isAdmin?`<button class="card-add" onclick="openAddInsumo('${u.key}')"><div class="card-add-icon">＋</div><div class="card-add-label">NOVO INSUMO</div></button>`:''}
   </div>`;
 }
 
@@ -679,7 +691,7 @@ function buildInsumoCard(u,i,canEdit,isAdmin){
       <span class="qty-current ${qc}">${i.qty}</span>
       <button class="qty-step-btn" onclick="adjustQty('${u.key}','${i.key}',1)">+</button>
     </div>
-    ${canEdit?`<div class="insumo-edit-row">
+    ${isAdmin?`<div class="insumo-edit-row">
       <button class="btn btn-ghost" onclick="openEditInsumo('${u.key}','${i.key}')">✏️ Editar</button>
       <button class="btn" style="background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:var(--red)" onclick="deleteInsumo('${u.key}','${i.key}')">✕</button>
     </div>`:''}
@@ -732,10 +744,6 @@ window.copyAnyDeskId=()=>{ if(!_cid){toast('Nenhum ID!','⚠️','t-yellow');ret
    COMPUTADORES
 ══════════════════════════════════════════ */
 window.openEditComp=(uk,ck)=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const unit=_units.find(u=>u.key===uk),comp=unit?.computers.find(c=>c.key===ck);if(!comp)return;
   const isAdmin=CU?.role==='admin';
   document.getElementById('editComp_uk').value=uk;document.getElementById('editComp_ck').value=ck;
@@ -746,10 +754,6 @@ window.openEditComp=(uk,ck)=>{
   openModal('m_editComp');
 };
 window.saveComp=async()=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const uk=document.getElementById('editComp_uk').value,ck=document.getElementById('editComp_ck').value;
   const unit=_units.find(u=>u.key===uk),comp=unit?.computers.find(c=>c.key===ck);if(!comp)return;
   const n=document.getElementById('ec_name').value.trim();
@@ -765,22 +769,14 @@ window.openAddComp=(preUk)=>{
   openModal('m_addComp');
 };
 window.addComp=async()=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const uk=document.getElementById('ac_unit').value,name=document.getElementById('ac_name').value.trim();
   if(!name){toast('Informe o nome!','⚠️','t-yellow');return;}
   const unit=_units.find(u=>u.key===uk);if(!unit)return;if(!unit.computers)unit.computers=[];
-  unit.computers.push({key:'c'+crypto.randomUUID(),name:name.toUpperCase(),anydesk:document.getElementById('ac_anydesk').value.trim(),ip:document.getElementById('ac_ip').value.trim(),serial:document.getElementById('ac_serial').value.trim(),obs:document.getElementById('ac_obs').value.trim()});
+  unit.computers.push({key:'c'+Date.now(),name:name.toUpperCase(),anydesk:document.getElementById('ac_anydesk').value.trim(),ip:document.getElementById('ac_ip').value.trim(),serial:document.getElementById('ac_serial').value.trim(),obs:document.getElementById('ac_obs').value.trim()});
   openUnits[uk]=true;openTabs[uk]='computers';closeModal('m_addComp');render();restoreOpen();
   try{await fsSaveUnits();toast('Computador adicionado!','✅','t-green');}catch{}
 };
 window.deleteComp=async(uk,ck)=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   if(!confirm('Remover este computador?'))return;
   const unit=_units.find(u=>u.key===uk);if(!unit)return;
   unit.computers=unit.computers.filter(c=>c.key!==ck);render();restoreOpen();
@@ -791,10 +787,6 @@ window.deleteComp=async(uk,ck)=>{
    UNIDADES
 ══════════════════════════════════════════ */
 window.addUnit=async()=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const name=document.getElementById('au_name').value.trim();if(!name){toast('Informe o nome!','⚠️','t-yellow');return;}
   const key='u'+Date.now();
   _units.push({key,name:name.toUpperCase(),desc:document.getElementById('au_desc').value.trim(),icon:document.getElementById('au_icon').value,color:document.getElementById('au_color').value,computers:[],insumos:[]});
@@ -809,10 +801,6 @@ window.openEditUnit=(uk)=>{
   openModal('m_editUnit');
 };
 window.saveUnit=async()=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const uk=document.getElementById('eu_key').value,unit=_units.find(u=>u.key===uk);if(!unit)return;
   const n=document.getElementById('eu_name').value.trim();
   unit.name=(n||unit.name).toUpperCase();unit.desc=document.getElementById('eu_desc').value.trim();
@@ -821,10 +809,6 @@ window.saveUnit=async()=>{
   try{await fsSaveUnits();toast('Unidade salva!','✅','t-green');}catch{}
 };
 window.deleteUnit=async(uk)=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   if(!confirm('Remover esta unidade e todos os dados?'))return;
   _units=_units.filter(u=>u.key!==uk);render();
   try{await fsSaveUnits();toast('Removida.','🗑️','t-red');}catch{}
@@ -854,10 +838,6 @@ window.openEditInsumo=(uk,ik)=>{
   openModal('m_editInsumo');
 };
 window.saveInsumo=async()=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const uk=document.getElementById('ei_uk').value,ik=document.getElementById('ei_ik').value;
   const name=document.getElementById('ei_name').value.trim();if(!name){toast('Informe o nome!','⚠️','t-yellow');return;}
   if(ik){
@@ -867,17 +847,13 @@ window.saveInsumo=async()=>{
   }else{
     const selUk=document.getElementById('ei_unit').value,unit=_units.find(u=>u.key===selUk);if(!unit)return;
     if(!unit.insumos)unit.insumos=[];
-    unit.insumos.push({key:'i'+crypto.randomUUID(),name,model:document.getElementById('ei_model').value.trim(),qty:parseInt(document.getElementById('ei_qty').value)||0,min:parseInt(document.getElementById('ei_min').value)||0,obs:document.getElementById('ei_obs').value.trim()});
+    unit.insumos.push({key:'i'+Date.now(),name,model:document.getElementById('ei_model').value.trim(),qty:parseInt(document.getElementById('ei_qty').value)||0,min:parseInt(document.getElementById('ei_min').value)||0,obs:document.getElementById('ei_obs').value.trim()});
     openUnits[selUk]=true;openTabs[selUk]='insumos';
   }
   closeModal('m_editInsumo');render();restoreOpen();
   try{await fsSaveUnits();toast('Insumo salvo!','✅','t-green');}catch{}
 };
 window.adjustQty=async(uk,ik,delta)=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const unit=_units.find(u=>u.key===uk),ins=unit?.insumos?.find(i=>i.key===ik);if(!ins)return;
   ins.qty=Math.max(0,(ins.qty||0)+delta);render();restoreOpen();
   if(ins.qty===0)toast('⚠️ '+ins.name+' ESGOTADO!','🔴','t-red');
@@ -885,10 +861,6 @@ window.adjustQty=async(uk,ik,delta)=>{
   try{await fsSaveUnits();}catch{}
 };
 window.deleteInsumo=async(uk,ik)=>{
-  if(!canEditData()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   if(!confirm('Remover este insumo?'))return;
   const unit=_units.find(u=>u.key===uk);if(!unit)return;
   unit.insumos=unit.insumos.filter(i=>i.key!==ik);render();restoreOpen();
@@ -910,10 +882,6 @@ window.renderUsers=()=>{
     </div>`).join('');
 };
 window.addUser=async()=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const name=document.getElementById('nu_name').value.trim(),pass=document.getElementById('nu_pass').value,role=document.getElementById('nu_role').value;
   if(!name||!pass){toast('Preencha todos os campos!','⚠️','t-yellow');return;}
   if(_users.find(u=>u.username===name)){toast('Usuário já existe!','⚠️','t-yellow');return;}
@@ -923,10 +891,6 @@ window.addUser=async()=>{
   try{await fsSaveUsers();toast('Usuário criado!','✅','t-green');}catch{}
 };
 window.deleteUser=async(name)=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   if(!confirm(`Remover "${name}"?`))return;
   _users=_users.filter(u=>u.username!==name);renderUsers();
   try{await fsSaveUsers();toast('Removido.','🗑️','t-red');}catch{}
@@ -937,10 +901,6 @@ window.openChangePass=(username)=>{
   openModal('m_changePass');
 };
 window.doChangePass=async()=>{
-  if(!isAdmin()){
-    toast('Sem permissão!','❌','t-red');
-    return;
-  }
   const username=document.getElementById('cp_username').value;
   const p1=document.getElementById('cp_pass').value,p2=document.getElementById('cp_pass2').value;
   if(!p1){toast('Digite a nova senha!','⚠️','t-yellow');return;}
@@ -974,10 +934,25 @@ window.toast=(msg,icon,cls)=>{
 /* ══════ INICIAR ══════ */
 boot();
 </script>
-  <script src="js/logs.js"></script>
+
+<script src="js/logs.js"></script>
 <script src="js/alertas.js"></script>
 <script src="js/exportacao.js"></script>
+
+
+<script>
+window.addEventListener('load',()=>{
+  try{
+    if(window.generateAlerts){
+      setTimeout(()=>generateAlerts(),1200);
+    }
+  }catch(e){
+    console.error(e);
+  }
+});
+</script>
 </body>
+
 </html>
 HTMLEOF
 echo "TAMANHO: $(wc -c < /mnt/user-data/outputs/ggtech_painel.html) bytes"
