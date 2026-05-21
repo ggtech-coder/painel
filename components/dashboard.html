@@ -1,0 +1,47 @@
+<!-- DASHBOARD -->
+
+<div class="dashboard-grid">
+
+  <div class="dash-card">
+    <h2>Total PCs</h2>
+    <span id="totalPCs">0</span>
+  </div>
+
+  <div class="dash-card">
+    <h2>Insumos</h2>
+    <span id="totalInsumos">0</span>
+  </div>
+
+  <div class="dash-card">
+    <h2>Alertas</h2>
+    <span id="totalAlerts">0</span>
+  </div>
+
+</div>
+
+<style>
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.dash-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  padding:20px;
+  border-radius:20px;
+  backdrop-filter:blur(10px);
+}
+
+.dash-card h2{
+  font-size:16px;
+}
+
+.dash-card span{
+  font-size:42px;
+  font-weight:bold;
+}
+
+</style>
