@@ -1,16 +1,22 @@
-// ===== EXPORTAÇÃO JSON/EXCEL =====
 
-window.exportInventory=()=>{
+window.exportInventory = function(){
 
-  const data = JSON.stringify(_units,null,2);
+  try{
 
-  const blob = new Blob([data],{
-    type:'application/json'
-  });
+    const data = JSON.stringify(window._units || [], null, 2);
 
-  const a = document.createElement('a');
+    const blob = new Blob([data],{
+      type:'application/json'
+    });
 
-  a.href = URL.createObjectURL(blob);
-  a.download = 'inventario.json';
-  a.click();
-};
+    const a = document.createElement('a');
+
+    a.href = URL.createObjectURL(blob);
+    a.download = 'inventario.json';
+    a.click();
+
+  }catch(e){
+    console.error(e);
+  }
+
+}
