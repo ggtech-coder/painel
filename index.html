@@ -318,7 +318,7 @@ main.show{display:block}
       <div class="form-grid">
         <div class="field full"><label>NOME DA UNIDADE</label><input type="text" id="au_name" placeholder="ex: UPA CENTRAL"></div>
         <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="au_desc" placeholder="ex: Unidade de Pronto Atendimento"></div>
-        <div class="field"><label>ÍCONE</label><select id="au_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Policlínica</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
+        <div class="field"><label>ÍCONE</label><select id="au_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Pronto atendimento</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
         <div class="field"><label>COR</label><select id="au_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select></div>
       </div>
     </div>
@@ -335,7 +335,7 @@ main.show{display:block}
       <div class="form-grid">
         <div class="field full"><label>NOME</label><input type="text" id="eu_name"></div>
         <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="eu_desc"></div>
-        <div class="field"><label>ÍCONE</label><select id="eu_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Policlínica</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
+        <div class="field"><label>ÍCONE</label><select id="eu_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Pronto atendimento</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
         <div class="field"><label>COR</label><select id="eu_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select></div>
       </div>
     </div>
@@ -440,13 +440,13 @@ const DEFAULT_UNITS = [
      {key:'c4',name:'MÉDICO 01',anydesk:'',ip:'',serial:'',obs:''},
    ],
    insumos:[{key:'i1',name:'Toner HP LaserJet',model:'CF226A / 26A',qty:0,min:2,obs:'Impressora triagem'}]},
-  {key:'pq_sao_jorge',name:'PQ SÃO JORGE',desc:'Policlínica São Jorge',icon:'🏥',color:'#00ff9d',
+  {key:'pq_sao_jorge',name:'PQ SÃO JORGE',desc:'Pronto atendimento São Jorge',icon:'🏥',color:'#00ff9d',
    computers:[
      {key:'c1',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:''},
      {key:'c2',name:'CONSULTÓRIO 01',anydesk:'',ip:'',serial:'',obs:''},
    ],
    insumos:[{key:'i1',name:'Toner Canon',model:'CRG-052',qty:2,min:2,obs:''}]},
-  {key:'psi',name:'PSI',desc:'Centro de Atenção Psicossocial',icon:'🧠',color:'#a855f7',
+  {key:'psi',name:'PSI',desc:'Pronto Socorro Infantil',icon:'🧠',color:'#a855f7',
    computers:[
      {key:'c1',name:'RECEPÇÃO',anydesk:'',ip:'',serial:'',obs:''},
      {key:'c2',name:'SALA TÉCNICA',anydesk:'',ip:'',serial:'',obs:''},
