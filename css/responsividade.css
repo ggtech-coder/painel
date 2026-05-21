@@ -1,8 +1,18 @@
+
 /* RESPONSIVIDADE GLOBAL */
 
+*{
+  box-sizing:border-box;
+}
+
+img{
+  max-width:100%;
+}
+
 @media (max-width: 1200px){
-  .grid{
-    grid-template-columns: repeat(2,1fr)!important;
+  .grid,
+  .dashboard-grid{
+    grid-template-columns:repeat(2,1fr)!important;
   }
 }
 
@@ -44,8 +54,8 @@
   }
 
   .topbar{
-    flex-direction:column;
-    gap:10px;
+    flex-direction:column!important;
+    gap:10px!important;
   }
 
   button{
@@ -53,12 +63,7 @@
   }
 
   input,select,textarea{
-    width:100%;
-  }
-
-  .comp-card,
-  .insumo-card{
-    padding:12px;
+    width:100%!important;
   }
 
 }
