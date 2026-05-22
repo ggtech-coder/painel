@@ -1,4 +1,4 @@
-cat > /home/claude/ind3x_new.html << 'HTMLEOF'
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -120,7 +120,26 @@ cat > /home/claude/ind3x_new.html << 'HTMLEOF'
   </div>
 
 
-  <!-- ══ ALERTS PAGE ══ -->
+  
+<div class="page-view" id="page-stock">
+  <div class="section-head">
+    <div class="section-title">ESTOQUE CENTRAL</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="toolbar" id="stockToolbar">
+    <button class="btn btn-primary btn-sm" onclick="openStockModal()">＋ Adicionar Item</button>
+  </div>
+
+  <div class="field" style="margin-bottom:20px;">
+    <label>SELECIONE A UNIDADE</label>
+    <select id="stockUnitFilter" onchange="renderStockPage()"></select>
+  </div>
+
+  <div id="stockItemsContainer" class="stock-page-grid"></div>
+</div>
+
+<!-- ══ ALERTS PAGE ══ -->
   <div class="page-view" id="page-alerts">
     <div class="section-head"><div class="section-title">ALERTAS DE ESTOQUE</div><div class="section-line"></div></div>
     <div id="alertsContainer">
@@ -297,7 +316,61 @@ cat > /home/claude/ind3x_new.html << 'HTMLEOF'
 
 <!-- FIREBASE SDK -->
 <script type="module" src="assets/js/app.js"></script>
+
+<div class="overlay" id="m_stockItem">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📦 Item de Estoque</div>
+      <button class="modal-close" onclick="closeModal('m_stockItem')">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="stockEditId">
+
+      <div class="form-grid">
+        <div class="field full">
+          <label>UNIDADE</label>
+          <select id="stockUnit"></select>
+        </div>
+
+        <div class="field full">
+          <label>NOME DO ITEM</label>
+          <input type="text" id="stockName">
+        </div>
+
+        <div class="field">
+          <label>PATRIMÔNIO</label>
+          <input type="text" id="stockPatrimonio">
+        </div>
+
+        <div class="field">
+          <label>NÚMERO DE SÉRIE</label>
+          <input type="text" id="stockSerial">
+        </div>
+
+        <div class="field">
+          <label>IP</label>
+          <input type="text" id="stockIp">
+        </div>
+
+        <div class="field">
+          <label>LOCAL</label>
+          <input type="text" id="stockLocal">
+        </div>
+
+        <div class="field full">
+          <label>OBSERVAÇÃO</label>
+          <input type="text" id="stockObs">
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m_stockItem')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveStockItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
-HTMLEOF
-echo "Done"
