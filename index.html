@@ -1,288 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GG TECH · Painel de Acesso Remoto</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="icon" href="assets/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GG TECH</title>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<!-- LOADING -->
-<div id="loadingScreen">
-  <div class="loading-brand">GG TECH</div>
-  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-text" id="loadingText">CONECTANDO AO FIREBASE...</div>
-</div>
+<header class="topbar">
+  <div class="logo">GG TECH</div>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-wrap">
-    <div class="login-logo">
-      <span class="brand">GG TECH</span>
-      <span class="sub">GERENCIAMENTO DE <span>ACESSO REMOTO</span></span>
-    </div>
-    <div class="field"><label>USUÁRIO</label><input type="text" id="li_user" placeholder="seu.usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field"><label>SENHA</label><input type="password" id="li_pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-err" id="li_err"></div>
-    <button class="btn btn-primary btn-full" style="font-family:'Orbitron',monospace;letter-spacing:3px;font-size:14px" onclick="doLogin()">ENTRAR</button>
-  </div>
-</div>
-
-<!-- MOBILE ALERT BANNER -->
-<div class="mobile-alert-banner" id="mobileAlertBanner" onclick="showPage('alerts')">
-  🔴 <span id="mobileAlertText">Alertas de estoque</span> — toque para ver
-</div>
-
-<!-- HEADER -->
-<header id="appHeader">
-  <div class="h-logo">
-    <div class="h-logo-mark">GG</div>
-    <div class="h-logo-text">
-      <div class="name">GG TECH</div>
-      <div class="tagline">PAINEL DE ACESSO REMOTO</div>
-    </div>
-  </div>
-  <div class="h-right">
-    <nav class="app-nav">
-      <button class="nav-tab active" id="nav-dashboard" onclick="showPage('dashboard')">📊 DASHBOARD</button>
-      <button class="nav-tab" id="nav-units" onclick="showPage('units')">🏥 UNIDADES</button>
-      <button class="nav-tab" id="nav-alerts" onclick="showPage('alerts')">🔔 ALERTAS<span class="alert-dot hidden" id="alertNavDot"></span></button>
-      <button class="nav-tab" id="nav-logs" onclick="showPage('logs')">📋 LOGS</button>
-    </nav>
-    <div class="sync-badge s-ok" id="syncBadge"><div class="sync-dot"></div><span id="syncText">ONLINE</span></div>
-    <div class="h-user"><div class="h-dot"></div><span class="h-user-name" id="h_username">–</span><span class="h-badge" id="h_badge">–</span></div>
-    <button class="btn btn-ghost btn-sm" onclick="doLogout()">SAIR</button>
-  </div>
+  <nav class="menu">
+    <button onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="showPage('units')">Unidades</button>
+    <button onclick="showPage('estoque')">Estoque</button>
+    <button class="admin-only" onclick="showPage('logs')">Logs</button>
+    <button class="admin-only" onclick="showPage('alerts')">Alertas</button>
+  </nav>
 </header>
 
-<main id="appMain">
+<main>
 
-  <!-- ══ DASHBOARD PAGE ══ -->
-  <div class="page-view active" id="page-dashboard">
-    <div class="section-head"><div class="section-title">VISÃO GERAL</div><div class="section-line"></div>
-      <div class="export-row" style="margin:0;margin-left:14px">
-        <button class="btn btn-ghost btn-sm" onclick="exportInventory()">📥 EXPORTAR CSV</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportInventoryJSON()">📄 EXPORTAR JSON</button>
+<section id="dashboard" class="page active">
+  <h1>Dashboard</h1>
+
+  <div class="cards">
+    <div class="card" onclick="showPage('units')">
+      <h2>🏥 Unidades</h2>
+      <p>Clique para acessar</p>
+    </div>
+
+    <div class="card" onclick="showPage('estoque')">
+      <h2>📦 Estoque</h2>
+      <p>Gerenciar estoque</p>
+    </div>
+
+    <div class="card admin-only" onclick="showPage('alerts')">
+      <h2>⚠️ Alertas</h2>
+      <p>Ver alertas</p>
+    </div>
+
+    <div class="card admin-only" onclick="showPage('logs')">
+      <h2>📋 Logs</h2>
+      <p>Ver auditoria</p>
+    </div>
+  </div>
+</section>
+
+<section id="units" class="page">
+  <h1>Unidades</h1>
+
+  <div class="mobile-list">
+    <div class="unit-card">
+      <h3>UPA CENTRAL</h3>
+      <p>5 computadores</p>
+    </div>
+
+    <div class="unit-card">
+      <h3>PSI</h3>
+      <p>2 computadores</p>
+    </div>
+  </div>
+</section>
+
+<section id="estoque" class="page">
+  <div class="section-top">
+    <h1>Estoque</h1>
+    <button>+ Novo item</button>
+  </div>
+
+  <div class="estoque-grid">
+    <div class="estoque-card">
+      <h3>Toner HP 26A</h3>
+      <p>Quantidade: 3</p>
+
+      <div class="actions">
+        <button>Editar</button>
+        <button>Excluir</button>
       </div>
     </div>
-    <div class="dash-stats-grid">
-      <div class="dash-stat ds-blue"><span class="ds-icon">🏥</span><div class="ds-val" id="ds-units">0</div><div class="ds-label">UNIDADES</div></div>
-      <div class="dash-stat ds-green"><span class="ds-icon">🖥️</span><div class="ds-val" id="ds-pcs">0</div><div class="ds-label">COMPUTADORES</div></div>
-      <div class="dash-stat ds-purple"><span class="ds-icon">📦</span><div class="ds-val" id="ds-insumos">0</div><div class="ds-label">INSUMOS TOTAL</div></div>
-      <div class="dash-stat ds-orange"><span class="ds-icon">🖨️</span><div class="ds-val" id="ds-toners">0</div><div class="ds-label">TONERS TOTAL</div></div>
-      <div class="dash-stat ds-red"><span class="ds-icon">⚠️</span><div class="ds-val" id="ds-alerts">0</div><div class="ds-label">ALERTAS ATIVOS</div></div>
-      <div class="dash-stat ds-yellow"><span class="ds-icon">🔴</span><div class="ds-val" id="ds-esgotados">0</div><div class="ds-label">ESGOTADOS</div></div>
-    </div>
-    <div class="dash-two-col">
-      <div class="dash-mini-card">
-        <div class="dash-mini-title">PCs POR UNIDADE</div>
-        <div id="dash-pcs-by-unit"></div>
-      </div>
-      <div class="dash-mini-card">
-        <div class="dash-mini-title">TONERS POR UNIDADE</div>
-        <div id="dash-toners-by-unit"></div>
+
+    <div class="estoque-card">
+      <h3>Toner Brother</h3>
+      <p>Quantidade: 1</p>
+
+      <div class="actions">
+        <button>Editar</button>
+        <button>Excluir</button>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ══ UNITS PAGE ══ -->
-  <div class="page-view" id="page-units">
-    <div class="toolbar hidden" id="adminBar">
-      <span class="toolbar-label">⚡ ADMIN</span>
-      <button class="btn btn-primary btn-sm" onclick="openModal('m_addUnit')">＋ Unidade</button>
-      <button class="btn btn-ghost btn-sm" onclick="openAddComp(null)">＋ Computador</button>
-      <button class="btn btn-ghost btn-sm" onclick="openAddInsumo(null)">＋ Insumo/Toner</button>
-      <button class="btn btn-ghost btn-sm" onclick="openModal('m_users')">👥 Usuários</button>
-    </div>
-    <div class="tech-toolbar hidden" id="techBar">
-      <span class="tech-toolbar-label">🔧 TÉCNICO</span>
-      <button class="btn btn-primary btn-sm" onclick="openAddComp(null)">＋ Computador</button>
-      <button class="btn btn-ghost btn-sm" onclick="openAddInsumo(null)">＋ Insumo/Toner</button>
-    </div>
-    <div class="section-head"><div class="section-title">UNIDADES DE SAÚDE</div><div class="section-line"></div></div>
-    <div id="unitsContainer"></div>
+<section id="logs" class="page">
+  <h1>Logs</h1>
+  <p>Área administrativa.</p>
+</section>
+
+<section id="alerts" class="page">
+  <div class="fixed-alert">
+    ⚠️ ALERTA FIXO — estoque baixo
   </div>
 
-  <!-- ══ ALERTS PAGE ══ -->
-  <div class="page-view" id="page-alerts">
-    <div class="section-head"><div class="section-title">ALERTAS DE ESTOQUE</div><div class="section-line"></div></div>
-    <div id="alertsContainer">
-      <div class="empty-state"><div class="icon">✅</div>NENHUM ALERTA ATIVO</div>
-    </div>
-  </div>
-
-  <!-- ══ LOGS PAGE ══ -->
-  <div class="page-view" id="page-logs">
-    <div class="section-head"><div class="section-title">LOGS / AUDITORIA</div><div class="section-line"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-left:14px" onclick="clearLogs()">🗑️ Limpar</button>
-    </div>
-    <div class="logs-filter">
-      <button class="filter-btn active" onclick="filterLogs('all',this)">TODOS</button>
-      <button class="filter-btn" onclick="filterLogs('login',this)">LOGIN</button>
-      <button class="filter-btn" onclick="filterLogs('edit',this)">EDIÇÕES</button>
-      <button class="filter-btn" onclick="filterLogs('stock',this)">ESTOQUE</button>
-      <button class="filter-btn" onclick="filterLogs('alert',this)">ALERTAS</button>
-    </div>
-    <div id="logsContainer">
-      <div class="empty-state"><div class="icon">📋</div>NENHUM LOG REGISTRADO</div>
-    </div>
-  </div>
+  <h1>Alertas</h1>
+</section>
 
 </main>
 
-<!-- MODAL: CONECTAR -->
-<div class="overlay" id="m_connect">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">⚡ CONECTAR VIA ANYDESK</div><button class="modal-close" onclick="closeModal('m_connect')">✕</button></div>
-    <div class="modal-body">
-      <div class="connect-panel">
-        <div class="anydesk-display"><div class="dlabel">ID ANYDESK</div><div class="did" id="conn_id">—</div></div>
-        <div class="connect-info-grid">
-          <div class="connect-info-cell"><div class="lbl">MÁQUINA</div><div class="val" id="conn_name">—</div></div>
-          <div class="connect-info-cell"><div class="lbl">UNIDADE</div><div class="val" id="conn_unit">—</div></div>
-          <div class="connect-info-cell"><div class="lbl">ENDEREÇO IP</div><div class="val" id="conn_ip">—</div></div>
-          <div class="connect-info-cell"><div class="lbl">Nº SÉRIE</div><div class="val" id="conn_serial">—</div></div>
-        </div>
-        <div class="connect-pass"><div class="lbl">SENHA NÃO SUPERVISIONADO</div><div class="pass">*Operacional</div></div>
-        <div class="connect-btns">
-          <button class="btn btn-primary" style="flex:2;font-family:'Orbitron',monospace;letter-spacing:2px;font-size:13px" onclick="doConnect()">⚡ ABRIR ANYDESK</button>
-          <button class="btn btn-ghost" style="flex:1" onclick="copyAnyDeskId()">📋 COPIAR ID</button>
-        </div>
-        <div class="connect-note">Se o AnyDesk não abrir automaticamente, copie o ID e cole diretamente no app AnyDesk.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: EDITAR COMPUTADOR -->
-<div class="overlay" id="m_editComp">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">🖥️ <span id="editComp_title">Editar Computador</span></div><button class="modal-close" onclick="closeModal('m_editComp')">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="editComp_uk"><input type="hidden" id="editComp_ck">
-      <div class="form-grid">
-        <div class="field full"><label>NOME DA MÁQUINA</label><input type="text" id="ec_name" placeholder="ex: TRIAGEM 01"></div>
-        <div class="field full"><label>ID ANYDESK</label><input type="text" id="ec_anydesk" placeholder="123 456 789"></div>
-        <div class="field"><label>ENDEREÇO IP</label><input type="text" id="ec_ip" placeholder="192.168.1.10"></div>
-        <div class="field"><label>Nº DE SÉRIE</label><input type="text" id="ec_serial" placeholder="SN-XXXXXXX"></div>
-        <div class="field full"><label>OBSERVAÇÃO</label><input type="text" id="ec_obs" placeholder="ex: Dell OptiPlex"></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_editComp')">Cancelar</button><button class="btn btn-primary" onclick="saveComp()">Salvar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: ADICIONAR COMPUTADOR -->
-<div class="overlay" id="m_addComp">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">＋ Novo Computador</div><button class="modal-close" onclick="closeModal('m_addComp')">✕</button></div>
-    <div class="modal-body">
-      <div class="field"><label>UNIDADE</label><select id="ac_unit"></select></div>
-      <div class="form-grid">
-        <div class="field full"><label>NOME DA MÁQUINA</label><input type="text" id="ac_name" placeholder="ex: TRIAGEM 01"></div>
-        <div class="field full"><label>ID ANYDESK</label><input type="text" id="ac_anydesk" placeholder="123 456 789"></div>
-        <div class="field"><label>ENDEREÇO IP</label><input type="text" id="ac_ip" placeholder="192.168.1.10"></div>
-        <div class="field"><label>Nº DE SÉRIE</label><input type="text" id="ac_serial" placeholder="SN-XXXXXXX"></div>
-        <div class="field full"><label>OBSERVAÇÃO</label><input type="text" id="ac_obs" placeholder="ex: Dell OptiPlex, sala de triagem"></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_addComp')">Cancelar</button><button class="btn btn-primary" onclick="addComp()">Adicionar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: ADICIONAR UNIDADE -->
-<div class="overlay" id="m_addUnit">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">🏥 Nova Unidade</div><button class="modal-close" onclick="closeModal('m_addUnit')">✕</button></div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="field full"><label>NOME DA UNIDADE</label><input type="text" id="au_name" placeholder="ex: UPA CENTRAL"></div>
-        <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="au_desc" placeholder="ex: Unidade de Pronto Atendimento"></div>
-        <div class="field"><label>ÍCONE</label><select id="au_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Pronto atendimento</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
-        <div class="field"><label>COR</label><select id="au_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_addUnit')">Cancelar</button><button class="btn btn-primary" onclick="addUnit()">Criar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: EDITAR UNIDADE -->
-<div class="overlay" id="m_editUnit">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">✏️ Editar Unidade</div><button class="modal-close" onclick="closeModal('m_editUnit')">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="eu_key">
-      <div class="form-grid">
-        <div class="field full"><label>NOME</label><input type="text" id="eu_name"></div>
-        <div class="field full"><label>DESCRIÇÃO</label><input type="text" id="eu_desc"></div>
-        <div class="field"><label>ÍCONE</label><select id="eu_icon"><option value="🚑">🚑 UPA</option><option value="🏥">🏥 Hospital</option><option value="🧠">🧠 PSI/CAPS</option><option value="🏨">🏨 Pronto atendimento</option><option value="💊">💊 Farmácia</option><option value="🖥️">🖥️ TI</option><option value="🔬">🔬 Laboratório</option></select></div>
-        <div class="field"><label>COR</label><select id="eu_color"><option value="#00e5ff">Azul Ciano</option><option value="#00ff9d">Verde</option><option value="#ffcc00">Amarelo</option><option value="#ff3355">Vermelho</option><option value="#a855f7">Roxo</option><option value="#ff6b2b">Laranja</option><option value="#38bdf8">Azul Claro</option></select></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_editUnit')">Cancelar</button><button class="btn btn-primary" onclick="saveUnit()">Salvar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: INSUMO -->
-<div class="overlay" id="m_editInsumo">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">📦 <span id="ei_title">Insumo</span></div><button class="modal-close" onclick="closeModal('m_editInsumo')">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="ei_uk"><input type="hidden" id="ei_ik">
-      <div class="field"><label>UNIDADE</label><select id="ei_unit"></select></div>
-      <div class="form-grid">
-        <div class="field full"><label>NOME DO INSUMO / TONER</label><input type="text" id="ei_name" placeholder="ex: Toner HP LaserJet 26A"></div>
-        <div class="field full"><label>MODELO / REFERÊNCIA</label><input type="text" id="ei_model" placeholder="ex: CF226A / 26A"></div>
-        <div class="field"><label>QTD EM ESTOQUE</label><input type="number" id="ei_qty" value="0" min="0"></div>
-        <div class="field"><label>ALERTA MÍNIMO</label><input type="number" id="ei_min" value="2" min="0"></div>
-        <div class="field full"><label>OBSERVAÇÃO</label><input type="text" id="ei_obs" placeholder="ex: Impressora da triagem"></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_editInsumo')">Cancelar</button><button class="btn btn-primary" onclick="saveInsumo()">Salvar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: USUÁRIOS -->
-<div class="overlay" id="m_users">
-  <div class="modal modal-lg">
-    <div class="modal-header"><div class="modal-title">👥 Usuários</div><button class="modal-close" onclick="closeModal('m_users')">✕</button></div>
-    <div class="modal-body">
-      <div class="section-label">ADICIONAR</div>
-      <div class="form-grid">
-        <div class="field"><label>USUÁRIO</label><input type="text" id="nu_name" placeholder="tecnico01"></div>
-        <div class="field"><label>SENHA</label><input type="password" id="nu_pass" placeholder="••••••••"></div>
-        <div class="field"><label>PERFIL</label><select id="nu_role"><option value="tech">Técnico</option><option value="admin">Admin</option></select></div>
-        <div class="field" style="display:flex;align-items:flex-end"><button class="btn btn-primary" style="width:100%" onclick="addUser()">Adicionar</button></div>
-      </div>
-      <div class="divider"></div>
-      <div class="section-label">CADASTRADOS</div>
-      <div id="usersList"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_users')">Fechar</button></div>
-  </div>
-</div>
-
-<!-- MODAL: TROCAR SENHA -->
-<div class="overlay" id="m_changePass">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">🔑 Trocar Senha</div><button class="modal-close" onclick="closeModal('m_changePass')">✕</button></div>
-    <div class="modal-body">
-      <input type="hidden" id="cp_username">
-      <div class="field"><label>USUÁRIO</label><input type="text" id="cp_display" disabled></div>
-      <div class="field"><label>NOVA SENHA</label><input type="password" id="cp_pass" placeholder="Nova senha"></div>
-      <div class="field"><label>CONFIRMAR SENHA</label><input type="password" id="cp_pass2" placeholder="Repita a senha"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m_changePass')">Cancelar</button><button class="btn btn-yellow" onclick="doChangePass()">Salvar Senha</button></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"><span class="toast-icon" id="toast_icon">✅</span><span id="toast_msg"></span></div>
-
-<!-- FIREBASE SDK -->
-<script type="module" src="assets/js/app.js"></script>
+<script src="assets/js/app.js"></script>
 </body>
 </html>
-
