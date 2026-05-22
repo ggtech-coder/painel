@@ -640,38 +640,32 @@ window.toast=(msg,icon,cls)=>{
 boot();
 
 
-/* ===== DASHBOARD CLICAVEL ===== */
-document.addEventListener('DOMContentLoaded',()=>{
+/* ===== MELHORIAS CUSTOM ===== */
+const originalLogin = window.doLogin;
 
-  const ids = {
-    'ds-units':'units',
-    'ds-pcs':'units',
-    'ds-insumos':'alerts',
-    'ds-toners':'alerts',
-    'ds-alerts':'alerts',
-    'ds-esgotados':'alerts'
-  };
-
-  Object.entries(ids).forEach(([id,page])=>{
-    const el = document.getElementById(id);
-    if(el && el.parentElement){
-      el.parentElement.onclick=()=>showPage(page);
-    }
-  });
-
-});
-
-/* ===== BLOQUEIO TÉCNICO ===== */
-const _oldLogin = window.doLogin;
-window.doLogin = ()=>{
-  _oldLogin();
+window.doLogin = () => {
+  originalLogin();
 
   if(CU && CU.role === 'tech'){
+    const navLogs = document.getElementById('nav-logs');
+    const navAlerts = document.getElementById('nav-alerts');
 
-    const logsBtn = document.getElementById('nav-logs');
-    const alertsBtn = document.getElementById('nav-alerts');
-
-    if(logsBtn) logsBtn.style.display='none';
-    if(alertsBtn) alertsBtn.style.display='none';
+    if(navLogs) navLogs.style.display = 'none';
+    if(navAlerts) navAlerts.style.display = 'none';
   }
+
+  setupDashboardActions();
 };
+
+function setupDashboardActions(){
+  const cards = document.querySelectorAll('.dash-stat');
+
+  if(cards[0]) cards[0].onclick = ()=>showPage('units');
+  if(cards[1]) cards[1].onclick = ()=>showPage('units');
+  if(cards[2]) cards[2].onclick = ()=>showPage('stock');
+  if(cards[3]) cards[3].onclick = ()=>showPage('stock');
+}
+
+window.addEventListener('resize',()=>{
+  document.body.style.zoom = '100%';
+});
