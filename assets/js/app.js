@@ -669,3 +669,135 @@ function setupDashboardActions(){
 window.addEventListener('resize',()=>{
   document.body.style.zoom = '100%';
 });
+
+
+/* ===== ESTOQUE FUNCIONAL ===== */
+
+if(!window.stockItems){
+  window.stockItems = JSON.parse(localStorage.getItem('ggtech_stock') || '[]');
+}
+
+function persistStock(){
+  localStorage.setItem('ggtech_stock', JSON.stringify(window.stockItems));
+}
+
+window.openStockModal = function(itemId=null){
+  const unitSelect = document.getElementById('stockUnit');
+  unitSelect.innerHTML = _units.map(u =>
+    `<option value="${u.key}">${u.name}</option>`
+  ).join('');
+
+  if(itemId){
+    const item = window.stockItems.find(i=>i.id===itemId);
+    if(item){
+      stockEditId.value = item.id;
+      stockUnit.value = item.unit;
+      stockName.value = item.name;
+      stockPatrimonio.value = item.patrimonio || '';
+      stockSerial.value = item.serial || '';
+      stockIp.value = item.ip || '';
+      stockLocal.value = item.local || '';
+      stockObs.value = item.obs || '';
+    }
+  } else {
+    stockEditId.value = '';
+    stockName.value = '';
+    stockPatrimonio.value = '';
+    stockSerial.value = '';
+    stockIp.value = '';
+    stockLocal.value = '';
+    stockObs.value = '';
+  }
+
+  openModal('m_stockItem');
+};
+
+window.saveStockItem = function(){
+  const data = {
+    id: stockEditId.value || 'stk_'+Date.now(),
+    unit: stockUnit.value,
+    name: stockName.value,
+    patrimonio: stockPatrimonio.value,
+    serial: stockSerial.value,
+    ip: stockIp.value,
+    local: stockLocal.value,
+    obs: stockObs.value
+  };
+
+  const idx = window.stockItems.findIndex(i=>i.id===data.id);
+
+  if(idx >= 0){
+    window.stockItems[idx] = data;
+  } else {
+    window.stockItems.push(data);
+  }
+
+  persistStock();
+  renderStockPage();
+  closeModal('m_stockItem');
+};
+
+window.deleteStockItem = function(id){
+  if(!confirm('Excluir item?')) return;
+
+  window.stockItems = window.stockItems.filter(i=>i.id !== id);
+
+  persistStock();
+  renderStockPage();
+};
+
+window.renderStockPage = function(){
+  const filter = document.getElementById('stockUnitFilter');
+  const container = document.getElementById('stockItemsContainer');
+
+  if(!filter || !container) return;
+
+  filter.innerHTML = '<option value="all">Todas as unidades</option>' +
+    _units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
+
+  const selected = filter.value || 'all';
+
+  let items = window.stockItems;
+
+  if(selected !== 'all'){
+    items = items.filter(i=>i.unit === selected);
+  }
+
+  container.innerHTML = items.map(item=>{
+    const unit = _units.find(u=>u.key===item.unit);
+
+    return `
+      <div class="stock-item-card">
+        <div class="stock-item-title">${item.name}</div>
+
+        <div class="stock-item-meta">
+          <div><strong>Unidade:</strong> ${unit ? unit.name : '-'}</div>
+          <div><strong>Patrimônio:</strong> ${item.patrimonio || '-'}</div>
+          <div><strong>Série:</strong> ${item.serial || '-'}</div>
+          <div><strong>IP:</strong> ${item.ip || '-'}</div>
+          <div><strong>Local:</strong> ${item.local || '-'}</div>
+          <div><strong>Obs:</strong> ${item.obs || '-'}</div>
+        </div>
+
+        <div class="stock-actions">
+          <button class="btn btn-primary btn-sm" onclick="openStockModal('${item.id}')">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteStockItem('${item.id}')">Excluir</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if(items.length === 0){
+    container.innerHTML = '<div class="empty-state"><div class="icon">📦</div>Nenhum item encontrado</div>';
+  }
+};
+
+const oldShowPage = window.showPage;
+
+window.showPage = function(page){
+  oldShowPage(page);
+
+  if(page === 'stock'){
+    setTimeout(renderStockPage,100);
+  }
+};
