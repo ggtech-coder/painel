@@ -1,3 +1,4 @@
+cat > /home/claude/ind3x_new.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -49,7 +50,7 @@
     <nav class="app-nav">
       <button class="nav-tab active" id="nav-dashboard" onclick="showPage('dashboard')">📊 DASHBOARD</button>
       <button class="nav-tab" id="nav-units" onclick="showPage('units')">🏥 UNIDADES</button>
-      <button class="nav-tab" id="nav-stock" onclick="showPage('alerts')">📦 ESTOQUE</button>
+      <button class="nav-tab" id="nav-stock" onclick="showPage(\'stock\')">📦 ESTOQUE</button>
       <button class="nav-tab" id="nav-alerts" onclick="showPage('alerts')">🔔 ALERTAS<span class="alert-dot hidden" id="alertNavDot"></span></button>
       <button class="nav-tab" id="nav-logs" onclick="showPage('logs')">📋 LOGS</button>
     </nav>
@@ -106,6 +107,18 @@
     <div class="section-head"><div class="section-title">UNIDADES DE SAÚDE</div><div class="section-line"></div></div>
     <div id="unitsContainer"></div>
   </div>
+
+  
+  <!-- ══ STOCK PAGE ══ -->
+  <div class="page-view" id="page-stock">
+    <div class="section-head">
+      <div class="section-title">ESTOQUE CENTRAL</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="stock-page-grid" id="stockGrid"></div>
+  </div>
+
 
   <!-- ══ ALERTS PAGE ══ -->
   <div class="page-view" id="page-alerts">
@@ -286,3 +299,5 @@
 <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
+HTMLEOF
+echo "Done"
