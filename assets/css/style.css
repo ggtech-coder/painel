@@ -421,3 +421,36 @@ main.show{display:block}
   border-radius:14px;
   padding:18px;
 }
+
+
+.stock-item-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.stock-item-title{
+  font-size:18px;
+  color:var(--white);
+  font-weight:700;
+}
+
+.stock-item-meta{
+  font-size:13px;
+  color:var(--text2);
+  line-height:1.6;
+}
+
+.stock-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.stock-actions .btn{
+  flex:1;
+}
