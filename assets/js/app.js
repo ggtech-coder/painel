@@ -1,6 +1,6 @@
 
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyB8ttDdzF0LEvaGHQfQ1hiEeK_LTKFYDPw",
@@ -894,7 +894,14 @@ function loadAgents(){
         const g=f=>d[f]?.stringValue??d[f]??'';
         const gb=f=>d[f]?.booleanValue??d[f]??false;
         const gn=f=>d[f]?.doubleValue??d[f]?.integerValue??d[f]??0;
-        const gt=f=>d[f]?.timestampValue??d[f]??null;
+        const gt=f=>{
+          const v=d[f];
+          if(!v) return null;
+          if(v.timestampValue) return v.timestampValue;               // formato REST (string ISO)
+          if(typeof v.toDate==='function') return v.toDate().toISOString(); // Timestamp do SDK
+          if(typeof v.seconds==='number') return new Date(v.seconds*1000).toISOString();
+          return v;
+        };
         _agents[docSnap.id]={
           hostname   :g('hostname')||docSnap.id,
           ip         :g('ip'),
@@ -995,6 +1002,18 @@ function getAgentDetails(comp){
   </div>`;
 }
 
+/** Remove um agente da lista de monitoramento (apaga o documento no Firestore) */
+window.deleteAgent=async(hostname)=>{
+  if(!confirm(`Remover "${hostname}" do monitoramento?\n\nSe a máquina ainda enviar heartbeat, ela pode reaparecer automaticamente.`))return;
+  try{
+    await deleteDoc(doc(db,'agents',hostname));
+    toast('Removido do monitoramento!','✅','t-green');
+  }catch(e){
+    console.warn('deleteAgent error:',e);
+    toast('Erro ao remover','⚠️','t-yellow');
+  }
+};
+
 /** Página de Monitoramento — lista todos os agentes */
 window.renderMonitorPage=function(){
   const c=document.getElementById('monitorContainer');
@@ -1017,7 +1036,7 @@ window.renderMonitorPage=function(){
         <thead><tr>
           <th>STATUS</th><th>HOSTNAME</th><th>UNIDADE</th>
           <th>IP</th><th>MAC</th><th>SERIAL</th>
-          <th>USUÁRIO</th><th>MODELO</th><th>ÚLTIMO HEARTBEAT</th>
+          <th>USUÁRIO</th><th>MODELO</th><th>ÚLTIMO HEARTBEAT</th><th></th>
         </tr></thead>
         <tbody>
           ${agents.sort((a,b)=>{
@@ -1039,6 +1058,7 @@ window.renderMonitorPage=function(){
               <td>${a.usuario||'—'}</td>
               <td>${a.modelo||'—'}</td>
               <td class="mtr-time">${ls}</td>
+              <td><button class="btn btn-danger btn-sm" title="Remover do monitoramento" onclick="deleteAgent('${a.hostname}')">✕</button></td>
             </tr>`;
           }).join('')}
         </tbody>
