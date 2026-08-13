@@ -599,6 +599,17 @@ window.exportInventory=()=>{
       rows.push([u.name,'INSUMO/TONER',i.name,i.model||'',i.qty,'',status,i.obs||'']);
     });
   });
+  
+  // Adicionar itens de estoque central
+  if(window.stockItems && window.stockItems.length > 0){
+    rows.push(['','','','','','','','']); // linha vazia
+    rows.push(['ESTOQUE CENTRAL','EQUIPAMENTO CENTRAL','','','','','','']);
+    window.stockItems.forEach(item=>{
+      const unit=_units.find(u=>u.key===item.unit);
+      rows.push([unit?unit.name:item.unit,'EQUIPAMENTO',item.name,item.patrimonio||'',item.serial||'',item.ip||'','ATIVO',item.local+' - '+item.obs]);
+    });
+  }
+  
   const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const bom='\uFEFF';
   const blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8'});
@@ -611,11 +622,28 @@ window.exportInventory=()=>{
 };
 
 window.exportInventoryJSON=()=>{
-  const data={exportedAt:new Date().toISOString(),units:_units.map(u=>({
-    name:u.name,icon:u.icon,desc:u.desc,
-    computers:(u.computers||[]).map(c=>({name:c.name,anydesk:c.anydesk,ip:c.ip,serial:c.serial,obs:c.obs})),
-    insumos:(u.insumos||[]).map(i=>({name:i.name,model:i.model,qty:i.qty,min:i.min,status:i.qty===0?'ESGOTADO':i.qty<=i.min?'BAIXO':'OK',obs:i.obs}))
-  }))};
+  const data={
+    exportedAt:new Date().toISOString(),
+    units:_units.map(u=>({
+      name:u.name,icon:u.icon,desc:u.desc,
+      computers:(u.computers||[]).map(c=>({name:c.name,anydesk:c.anydesk,ip:c.ip,serial:c.serial,obs:c.obs})),
+      insumos:(u.insumos||[]).map(i=>({name:i.name,model:i.model,qty:i.qty,min:i.min,status:i.qty===0?'ESGOTADO':i.qty<=i.min?'BAIXO':'OK',obs:i.obs}))
+    })),
+    estoqueCentral:window.stockItems?window.stockItems.map(item=>{
+      const unit=_units.find(u=>u.key===item.unit);
+      return {
+        id:item.id,
+        unidade:unit?unit.name:item.unit,
+        nome:item.name,
+        patrimonio:item.patrimonio,
+        serial:item.serial,
+        ip:item.ip,
+        local:item.local,
+        observacao:item.obs,
+        dataAdicao:new Date(parseInt(item.id.replace('stk_',''))).toLocaleString('pt-BR')
+      };
+    }):[]
+  };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -752,10 +780,16 @@ window.renderStockPage = function(){
 
   if(!filter || !container) return;
 
+  // Manter o valor selecionado se houver
+  const currentValue = filter.value;
+  
   filter.innerHTML = '<option value="all">Todas as unidades</option>' +
     _units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
 
-  const selected = filter.value || 'all';
+  // Restaurar valor selecionado ou usar 'all'
+  filter.value = currentValue || 'all';
+  
+  const selected = filter.value;
 
   let items = window.stockItems;
 
@@ -763,33 +797,50 @@ window.renderStockPage = function(){
     items = items.filter(i=>i.unit === selected);
   }
 
-  container.innerHTML = items.map(item=>{
-    const unit = _units.find(u=>u.key===item.unit);
-
-    return `
-      <div class="stock-item-card">
-        <div class="stock-item-title">${item.name}</div>
-
-        <div class="stock-item-meta">
-          <div><strong>Unidade:</strong> ${unit ? unit.name : '-'}</div>
-          <div><strong>Patrimônio:</strong> ${item.patrimonio || '-'}</div>
-          <div><strong>Série:</strong> ${item.serial || '-'}</div>
-          <div><strong>IP:</strong> ${item.ip || '-'}</div>
-          <div><strong>Local:</strong> ${item.local || '-'}</div>
-          <div><strong>Obs:</strong> ${item.obs || '-'}</div>
-        </div>
-
-        <div class="stock-actions">
-          <button class="btn btn-primary btn-sm" onclick="openStockModal('${item.id}')">Editar</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteStockItem('${item.id}')">Excluir</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
   if(items.length === 0){
     container.innerHTML = '<div class="empty-state"><div class="icon">📦</div>Nenhum item encontrado</div>';
+    return;
   }
+
+  // Renderizar como tabela compacta
+  const tableHTML = `
+    <div class="stock-table-wrapper">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>PATRIMÔNIO</th>
+            <th>SÉRIE</th>
+            <th>IP</th>
+            <th>LOCAL</th>
+            <th>OBS</th>
+            <th>AÇÕES</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(item => {
+            const unit = _units.find(u=>u.key===item.unit);
+            return `
+              <tr>
+                <td class="cell-name">${item.name}</td>
+                <td>${item.patrimonio || '-'}</td>
+                <td class="cell-serial">${item.serial || '-'}</td>
+                <td class="cell-ip">${item.ip || '-'}</td>
+                <td>${item.local || '-'}</td>
+                <td class="cell-obs">${item.obs || '-'}</td>
+                <td class="cell-actions">
+                  <button class="btn-icon" onclick="openStockModal('${item.id}')" title="Editar">✏️</button>
+                  <button class="btn-icon btn-danger" onclick="deleteStockItem('${item.id}')" title="Excluir">🗑️</button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = tableHTML;
 };
 
 const oldShowPage = window.showPage;
