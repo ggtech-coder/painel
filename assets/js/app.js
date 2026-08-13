@@ -426,6 +426,7 @@ window.openEditComp=(uk,ck)=>{
   document.getElementById('editComp_title').textContent=comp.name;
   document.getElementById('ec_name').value=comp.name||'';document.getElementById('ec_anydesk').value=comp.anydesk||'';
   document.getElementById('ec_ip').value=comp.ip||'';document.getElementById('ec_serial').value=comp.serial||'';document.getElementById('ec_obs').value=comp.obs||'';
+  document.getElementById('ec_sensor').value=comp.sensorStatus||'';
   openModal('m_editComp');
 };
 window.saveComp=async()=>{
@@ -434,6 +435,7 @@ window.saveComp=async()=>{
   const n=document.getElementById('ec_name').value.trim();
   comp.name=(n||comp.name).toUpperCase();comp.anydesk=document.getElementById('ec_anydesk').value.trim();
   comp.ip=document.getElementById('ec_ip').value.trim();comp.serial=document.getElementById('ec_serial').value.trim();comp.obs=document.getElementById('ec_obs').value.trim();
+  comp.sensorStatus=document.getElementById('ec_sensor').value;
   addLog('success',`PC editado: ${comp.name} (${unit.name})`,'edit');
   closeModal('m_editComp');render();restoreOpen();
   try{await fsSaveUnits();toast('Salvo!','✅','t-green');}catch{}
@@ -442,13 +444,14 @@ window.openAddComp=(preUk)=>{
   const sel=document.getElementById('ac_unit');sel.innerHTML=_units.map(u=>`<option value="${u.key}">${u.name}</option>`).join('');
   if(preUk)sel.value=preUk;
   ['ac_name','ac_anydesk','ac_ip','ac_serial','ac_obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ac_sensor').value='';
   openModal('m_addComp');
 };
 window.addComp=async()=>{
   const uk=document.getElementById('ac_unit').value,name=document.getElementById('ac_name').value.trim();
   if(!name){toast('Informe o nome!','⚠️','t-yellow');return;}
   const unit=_units.find(u=>u.key===uk);if(!unit)return;if(!unit.computers)unit.computers=[];
-  unit.computers.push({key:'c'+Date.now(),name:name.toUpperCase(),anydesk:document.getElementById('ac_anydesk').value.trim(),ip:document.getElementById('ac_ip').value.trim(),serial:document.getElementById('ac_serial').value.trim(),obs:document.getElementById('ac_obs').value.trim()});
+  unit.computers.push({key:'c'+Date.now(),name:name.toUpperCase(),anydesk:document.getElementById('ac_anydesk').value.trim(),ip:document.getElementById('ac_ip').value.trim(),serial:document.getElementById('ac_serial').value.trim(),obs:document.getElementById('ac_obs').value.trim(),sensorStatus:document.getElementById('ac_sensor').value});
   addLog('success',`PC adicionado: ${name.toUpperCase()} (${unit.name})`,'edit');
   openUnits[uk]=true;openTabs[uk]='computers';closeModal('m_addComp');render();restoreOpen();
   try{await fsSaveUnits();toast('Computador adicionado!','✅','t-green');}catch{}
@@ -916,6 +919,7 @@ function loadAgents(){
 /** Procura o agente que corresponde a um computador cadastrado (por IP ou Serial) */
 function findAgent(comp){
   if(!comp) return null;
+  if(comp.sensorStatus==='nao') return null; // marcado manualmente como "sem sensor" — ignora qualquer match automático
   return Object.values(_agents).find(a=>
     (comp.ip     && a.ip     && a.ip.trim()===comp.ip.trim()) ||
     (comp.serial && a.serial && a.serial.trim().toLowerCase()===comp.serial.trim().toLowerCase())
@@ -938,8 +942,14 @@ function getOfflineTime(agent){
 
 /** Badge HTML de status para o card do computador */
 function getStatusBadge(comp){
+  if(comp.sensorStatus==='nao'){
+    return `<span class="agent-badge agent-noagent" title="Marcado manualmente como sem sensor/agente">⚪ SEM SENSOR</span>`;
+  }
   const agent=findAgent(comp);
   if(!agent){
+    if(comp.sensorStatus==='sim'){
+      return `<span class="agent-badge agent-pending" title="Marcado como instalado, mas ainda sem heartbeat recebido">🟡 INSTALADO <em>sem dados</em></span>`;
+    }
     return `<span class="agent-badge agent-noagent" title="Agente não instalado">⚪ SEM AGENTE</span>`;
   }
   const off=getOfflineTime(agent);
@@ -952,8 +962,14 @@ function getStatusBadge(comp){
 
 /** Bloco de detalhes do agente para o modal de conexão */
 function getAgentDetails(comp){
+  if(comp.sensorStatus==='nao'){
+    return `<div class="agent-detail-empty">⚪ Sensor marcado manualmente como não instalado nesta máquina</div>`;
+  }
   const agent=findAgent(comp);
   if(!agent){
+    if(comp.sensorStatus==='sim'){
+      return `<div class="agent-detail-empty">🟡 Sensor marcado como instalado, mas nenhum heartbeat foi recebido ainda</div>`;
+    }
     return `<div class="agent-detail-empty">📡 Agente não instalado nesta máquina</div>`;
   }
   const off=getOfflineTime(agent);
