@@ -59,12 +59,14 @@ let _currentLogFilter='all';
 const refUnits = doc(db,'ggtech','units');
 const refUsers = doc(db,'ggtech','users');
 const refLogs  = doc(db,'ggtech','logs');
+const refStock = doc(db,'ggtech','stock');
 
 async function fsLoad(){
-  const [su,sus,sl] = await Promise.all([getDoc(refUnits),getDoc(refUsers),getDoc(refLogs)]);
-  _units = su.exists()  ? su.data().list  : null;
-  _users = sus.exists() ? sus.data().list : null;
-  _logs  = sl.exists()  ? sl.data().list  : [];
+  const [su,sus,sl,ss] = await Promise.all([getDoc(refUnits),getDoc(refUsers),getDoc(refLogs),getDoc(refStock)]);
+  _units        = su.exists()  ? su.data().list  : null;
+  _users        = sus.exists() ? sus.data().list : null;
+  _logs         = sl.exists()  ? sl.data().list  : [];
+  window.stockItems = ss.exists() ? ss.data().list : [];
 }
 async function fsSaveUnits(){
   sync('saving','SALVANDO...');
@@ -78,6 +80,11 @@ async function fsSaveUsers(){
 }
 async function fsSaveLogs(){
   try{await setDoc(refLogs,{list:_logs});}catch(e){console.warn('Log save err',e);}
+}
+async function fsSaveStock(){
+  sync('saving','SALVANDO...');
+  try{await setDoc(refStock,{list:window.stockItems});sync('ok','ONLINE');}
+  catch(e){sync('err','ERRO SYNC');toast('Erro: '+e.message,'❌','t-red');throw e;}
 }
 
 function sync(s,t){const el=document.getElementById('syncBadge');el.className='sync-badge s-'+s;document.getElementById('syncText').textContent=t;}
@@ -131,6 +138,11 @@ async function boot(){
       if(!snap.exists()||!CU)return;
       const fresh=snap.data().list;
       if(JSON.stringify(fresh)!==JSON.stringify(_units)){_units=fresh;render();restoreOpen();sync('ok','ONLINE');}
+    });
+    onSnapshot(refStock,snap=>{
+      if(!snap.exists()||!CU)return;
+      const fresh=snap.data().list||[];
+      if(JSON.stringify(fresh)!==JSON.stringify(window.stockItems)){window.stockItems=fresh;renderStockPage();sync('ok','ONLINE');}
     });
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('loginScreen').classList.add('show');
@@ -701,12 +713,11 @@ window.addEventListener('resize',()=>{
 
 /* ===== ESTOQUE FUNCIONAL ===== */
 
-if(!window.stockItems){
-  window.stockItems = JSON.parse(localStorage.getItem('ggtech_stock') || '[]');
-}
+// stockItems é carregado pelo fsLoad() no boot — sem localStorage
+if(!window.stockItems) window.stockItems = [];
 
 function persistStock(){
-  localStorage.setItem('ggtech_stock', JSON.stringify(window.stockItems));
+  fsSaveStock().catch(e=>console.warn('Stock save err',e));
 }
 
 window.openStockModal = function(itemId=null){
