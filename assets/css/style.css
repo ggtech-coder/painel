@@ -583,3 +583,202 @@ main.show{display:block}
   --text:rgba(245,247,255,0.85);
   --text2:rgba(245,247,255,0.55);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   AGENTE — Estilos de status online/offline e monitoramento
+   ══════════════════════════════════════════════════════════════ */
+
+/* Badge no card do computador */
+.comp-status {
+  min-height: 20px;
+  margin-bottom: 4px;
+}
+
+.agent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.agent-badge em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
+  opacity: .8;
+  margin-left: 3px;
+}
+
+.agent-online {
+  background: rgba(0,255,157,.12);
+  color: #00ff9d;
+  border: 1px solid rgba(0,255,157,.3);
+  animation: pulse-border 2.5s ease-in-out infinite;
+}
+
+.agent-offline {
+  background: rgba(255,68,68,.10);
+  color: #ff5555;
+  border: 1px solid rgba(255,68,68,.25);
+}
+
+.agent-noagent {
+  background: rgba(120,120,120,.10);
+  color: #777;
+  border: 1px solid rgba(120,120,120,.2);
+}
+
+@keyframes pulse-border {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,157,.3); }
+  50%      { box-shadow: 0 0 0 4px rgba(0,255,157,0); }
+}
+
+/* Bloco de agente no modal de conexão */
+.agent-detail-empty {
+  font-size: 12px;
+  color: var(--text2);
+  text-align: center;
+  padding: 10px;
+  border: 1px dashed rgba(255,255,255,.1);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.agent-detail-box {
+  background: rgba(0,229,255,.04);
+  border: 1px solid rgba(0,229,255,.15);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.agent-detail-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #00e5ff;
+  margin-bottom: 10px;
+  font-family: 'Orbitron', monospace;
+}
+
+.agent-detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  align-items: center;
+}
+
+.adl {
+  font-size: 10px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.adv {
+  font-size: 11px;
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  word-break: break-all;
+}
+
+/* ── Página de Monitoramento ── */
+.monitor-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.monitor-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: 'Orbitron', monospace;
+  gap: 4px;
+}
+
+.monitor-stat span {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.ms-green { background: rgba(0,255,157,.08); color: #00ff9d; border: 1px solid rgba(0,255,157,.2); }
+.ms-red   { background: rgba(255,68,68,.08); color: #ff5555; border: 1px solid rgba(255,68,68,.2); }
+.ms-gray  { background: rgba(120,120,120,.08); color: #aaa; border: 1px solid rgba(120,120,120,.2); }
+
+.monitor-table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(0,229,255,.12);
+}
+
+.monitor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 800px;
+}
+
+.monitor-table thead tr {
+  background: rgba(0,229,255,.08);
+}
+
+.monitor-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #00e5ff;
+  font-family: 'Orbitron', monospace;
+  border-bottom: 1px solid rgba(0,229,255,.15);
+  white-space: nowrap;
+}
+
+.monitor-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.monitor-table tbody tr:hover td {
+  background: rgba(0,229,255,.04);
+}
+
+.mtr-online td:first-child { color: #00ff9d; font-weight: 700; font-size: 11px; }
+.mtr-offline td:first-child { color: #ff5555; font-weight: 700; font-size: 11px; }
+
+.mtr-host {
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 700;
+  color: #e0e8ff !important;
+}
+
+.mtr-mono {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text2) !important;
+}
+
+.mtr-time {
+  font-size: 10px;
+  color: var(--text2) !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .monitor-summary { gap: 8px; }
+  .monitor-stat { padding: 10px 16px; }
+  .monitor-stat span { font-size: 22px; }
+}

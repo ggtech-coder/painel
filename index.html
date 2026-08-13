@@ -52,6 +52,7 @@
       <button class="nav-tab" id="nav-units" onclick="showPage('units')">🏥 UNIDADES</button>
       <button class="nav-tab" id="nav-stock" onclick="showPage('stock')">📦 ESTOQUE</button>
       <button class="nav-tab" id="nav-alerts" onclick="showPage('alerts')">🔔 ALERTAS<span class="alert-dot hidden" id="alertNavDot"></span></button>
+      <button class="nav-tab" id="nav-monitoramento" onclick="showPage('monitoramento')">📡 MONITORAMENTO</button>
       <button class="nav-tab" id="nav-logs" onclick="showPage('logs')">📋 LOGS</button>
     </nav>
     <div class="sync-badge s-ok" id="syncBadge"><div class="sync-dot"></div><span id="syncText">ONLINE</span></div>
@@ -128,6 +129,18 @@
   <div id="stockItemsContainer" class="stock-page-grid"></div>
 </div>
 
+<!-- ══ MONITORAMENTO PAGE ══ -->
+  <div class="page-view" id="page-monitoramento">
+    <div class="section-head">
+      <div class="section-title">📡 MONITORAMENTO DE MÁQUINAS</div>
+      <div class="section-line"></div>
+      <button class="btn btn-ghost btn-sm" style="margin-left:14px" onclick="renderMonitorPage()">🔄 Atualizar</button>
+    </div>
+    <div id="monitorContainer">
+      <div class="empty-state"><div class="icon">📡</div>CARREGANDO AGENTES...</div>
+    </div>
+  </div>
+
 <!-- ══ ALERTS PAGE ══ -->
   <div class="page-view" id="page-alerts">
     <div class="section-head"><div class="section-title">ALERTAS DE ESTOQUE</div><div class="section-line"></div></div>
@@ -174,6 +187,7 @@
           <button class="btn btn-ghost" style="flex:1" onclick="copyAnyDeskId()">📋 COPIAR ID</button>
         </div>
         <div class="connect-note">Se o AnyDesk não abrir automaticamente, copie o ID e cole diretamente no app AnyDesk.</div>
+        <div id="conn_agent_info" style="margin-top:14px"></div>
       </div>
     </div>
   </div>

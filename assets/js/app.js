@@ -1,6 +1,6 @@
 
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyB8ttDdzF0LEvaGHQfQ1hiEeK_LTKFYDPw",
@@ -11,6 +11,11 @@ const app = initializeApp({
   appId:"1:907825271687:web:737064762036d9a06b3922"
 });
 const db = getFirestore(app);
+
+/* ══ AGENTES — estado global ══ */
+const OFFLINE_THRESHOLD_MIN = 10; // minutos sem heartbeat = offline
+let _agents = {};                  // { hostname → dadosDoAgente }
+const refAgents = collection(db, 'agents');
 
 /* ══ DADOS PADRÃO ══ */
 const DEFAULT_UNITS = [
@@ -132,6 +137,7 @@ async function boot(){
   setLoading('CONECTANDO AO FIREBASE...');
   try{
     await fsLoad();
+    loadAgents();
     if(!_units){setLoading('PRIMEIRA VEZ — INICIALIZANDO...');_units=JSON.parse(JSON.stringify(DEFAULT_UNITS));await fsSaveUnits();}
     if(!_users){_users=JSON.parse(JSON.stringify(DEFAULT_USERS));await fsSaveUsers();}
     onSnapshot(refUnits,snap=>{
@@ -319,7 +325,7 @@ function buildCompsTab(u,comps,canEdit,isAdmin,isTech){
 function buildCompCard(u,c,canEdit,isAdmin,isTech){
   const hasId=c.anydesk&&c.anydesk.trim();
   return `<div class="comp-card">
-    <div class="comp-status"></div>
+    <div class="comp-status">${getStatusBadge(c)}</div>
     <div class="comp-name">${c.name}</div>
     <div class="comp-meta">
       <div class="comp-meta-row"><span class="comp-meta-label">ANYDESK</span>
@@ -404,6 +410,9 @@ window.openConnect=(uk,ck)=>{
   document.getElementById('conn_serial').textContent=comp.serial||'Não informado';
   _cid=(comp.anydesk||'').replace(/\s/g,'');
   document.getElementById('conn_id').textContent=comp.anydesk||'— ID não configurado —';
+  // Dados do agente
+  const agentBox=document.getElementById('conn_agent_info');
+  if(agentBox) agentBox.innerHTML=getAgentDetails(comp);
   addLog('info',`Conexão iniciada: ${comp.name} (${unit.name})`,'edit');
   openModal('m_connect');
 };
@@ -862,4 +871,161 @@ window.showPage = function(page){
   if(page === 'stock'){
     setTimeout(renderStockPage,100);
   }
+  if(page === 'monitoramento'){
+    setTimeout(renderMonitorPage,100);
+  }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   AGENTE — Funções de integração com o agente de monitoramento
+   ══════════════════════════════════════════════════════════════ */
+
+/** Escuta em tempo real a coleção "agents" no Firestore */
+function loadAgents(){
+  try{
+    onSnapshot(refAgents,(snapshot)=>{
+      _agents={};
+      snapshot.forEach(docSnap=>{
+        const d=docSnap.data();
+        // Suporta tanto campos tipados (Firestore REST) quanto campos diretos (SDK)
+        const g=f=>d[f]?.stringValue??d[f]??'';
+        const gb=f=>d[f]?.booleanValue??d[f]??false;
+        const gn=f=>d[f]?.doubleValue??d[f]?.integerValue??d[f]??0;
+        const gt=f=>d[f]?.timestampValue??d[f]??null;
+        _agents[docSnap.id]={
+          hostname   :g('hostname')||docSnap.id,
+          ip         :g('ip'),
+          mac        :g('mac'),
+          serial     :g('serial'),
+          modelo     :g('modelo'),
+          fabricante :g('fabricante'),
+          so         :g('so'),
+          usuario    :g('usuario'),
+          unidade    :g('unidade'),
+          uptimeHoras:gn('uptimeHoras'),
+          online     :gb('online'),
+          lastSeen   :gt('lastSeen'),
+        };
+      });
+      // Re-renderiza cards e página de monitoramento se estiver aberta
+      if(CU) render();
+    });
+  }catch(e){ console.warn('Agents listener error:',e); }
+}
+
+/** Procura o agente que corresponde a um computador cadastrado (por IP ou Serial) */
+function findAgent(comp){
+  if(!comp) return null;
+  return Object.values(_agents).find(a=>
+    (comp.ip     && a.ip     && a.ip.trim()===comp.ip.trim()) ||
+    (comp.serial && a.serial && a.serial.trim().toLowerCase()===comp.serial.trim().toLowerCase())
+  )||null;
+}
+
+/** Retorna quanto tempo a máquina está offline, ou null se estiver online */
+function getOfflineTime(agent){
+  if(!agent||!agent.lastSeen) return '?';
+  let lastDate;
+  try{ lastDate=new Date(agent.lastSeen); }catch{ return '?'; }
+  if(isNaN(lastDate)) return '?';
+  const diffMin=Math.floor((Date.now()-lastDate.getTime())/60000);
+  if(diffMin<OFFLINE_THRESHOLD_MIN) return null; // online
+  if(diffMin<60) return `${diffMin}min`;
+  const h=Math.floor(diffMin/60), m=diffMin%60;
+  if(h<24) return m>0?`${h}h ${m}min`:`${h}h`;
+  const d=Math.floor(h/24); return `${d}d ${h%24}h`;
+}
+
+/** Badge HTML de status para o card do computador */
+function getStatusBadge(comp){
+  const agent=findAgent(comp);
+  if(!agent){
+    return `<span class="agent-badge agent-noagent" title="Agente não instalado">⚪ SEM AGENTE</span>`;
+  }
+  const off=getOfflineTime(agent);
+  if(off===null){
+    const user=agent.usuario&&agent.usuario!=='Nenhum'?` · ${agent.usuario}`:'';
+    return `<span class="agent-badge agent-online" title="Online | IP: ${agent.ip} | MAC: ${agent.mac}${user}">🟢 ONLINE${user?`<em>${agent.usuario}</em>`:''}</span>`;
+  }
+  return `<span class="agent-badge agent-offline" title="Offline há ${off} | Último IP: ${agent.ip}">🔴 OFFLINE <em>há ${off}</em></span>`;
+}
+
+/** Bloco de detalhes do agente para o modal de conexão */
+function getAgentDetails(comp){
+  const agent=findAgent(comp);
+  if(!agent){
+    return `<div class="agent-detail-empty">📡 Agente não instalado nesta máquina</div>`;
+  }
+  const off=getOfflineTime(agent);
+  const statusHtml=off===null
+    ?`<span style="color:#00ff9d;font-weight:700">🟢 ONLINE</span>`
+    :`<span style="color:#ff4444;font-weight:700">🔴 OFFLINE há ${off}</span>`;
+  let lastSeenStr='N/D';
+  try{ if(agent.lastSeen) lastSeenStr=new Date(agent.lastSeen).toLocaleString('pt-BR'); }catch{}
+  return `
+  <div class="agent-detail-box">
+    <div class="agent-detail-title">📡 DADOS DO AGENTE</div>
+    <div class="agent-detail-grid">
+      <span class="adl">Status</span>      <span class="adv">${statusHtml}</span>
+      <span class="adl">IP</span>          <span class="adv">${agent.ip||'N/D'}</span>
+      <span class="adl">MAC</span>         <span class="adv">${agent.mac||'N/D'}</span>
+      <span class="adl">Serial</span>      <span class="adv">${agent.serial||'N/D'}</span>
+      <span class="adl">Modelo</span>      <span class="adv">${agent.modelo||'N/D'}</span>
+      <span class="adl">SO</span>          <span class="adv">${agent.so||'N/D'}</span>
+      <span class="adl">Usuário</span>     <span class="adv">${agent.usuario||'N/D'}</span>
+      <span class="adl">Uptime</span>      <span class="adv">${agent.uptimeHoras}h</span>
+      <span class="adl">Heartbeat</span>   <span class="adv">${lastSeenStr}</span>
+    </div>
+  </div>`;
+}
+
+/** Página de Monitoramento — lista todos os agentes */
+window.renderMonitorPage=function(){
+  const c=document.getElementById('monitorContainer');
+  if(!c) return;
+  const agents=Object.values(_agents);
+  if(!agents.length){
+    c.innerHTML='<div class="empty-state"><div class="icon">📡</div>NENHUM AGENTE CONECTADO<div style="font-size:12px;color:var(--text2);margin-top:8px">Instale o GGTech-Agente nas máquinas para ver o status aqui.</div></div>';
+    return;
+  }
+  const online=agents.filter(a=>getOfflineTime(a)===null).length;
+  const offline=agents.length-online;
+  c.innerHTML=`
+    <div class="monitor-summary">
+      <div class="monitor-stat ms-green"><span>${online}</span> ONLINE</div>
+      <div class="monitor-stat ms-red"><span>${offline}</span> OFFLINE</div>
+      <div class="monitor-stat ms-gray"><span>${agents.length}</span> TOTAL</div>
+    </div>
+    <div class="monitor-table-wrap">
+      <table class="monitor-table">
+        <thead><tr>
+          <th>STATUS</th><th>HOSTNAME</th><th>UNIDADE</th>
+          <th>IP</th><th>MAC</th><th>SERIAL</th>
+          <th>USUÁRIO</th><th>MODELO</th><th>ÚLTIMO HEARTBEAT</th>
+        </tr></thead>
+        <tbody>
+          ${agents.sort((a,b)=>{
+            const ao=getOfflineTime(a)===null, bo=getOfflineTime(b)===null;
+            return ao===bo?0:ao?-1:1;
+          }).map(a=>{
+            const off=getOfflineTime(a);
+            const isOn=off===null;
+            let ls='N/D';
+            try{ if(a.lastSeen) ls=new Date(a.lastSeen).toLocaleString('pt-BR'); }catch{}
+            const unit=_units.find(u=>u.key===a.unidade);
+            return `<tr class="${isOn?'mtr-online':'mtr-offline'}">
+              <td>${isOn?'🟢 ONLINE':`🔴 há ${off}`}</td>
+              <td class="mtr-host">${a.hostname}</td>
+              <td>${unit?unit.name:a.unidade||'—'}</td>
+              <td class="mtr-mono">${a.ip||'—'}</td>
+              <td class="mtr-mono">${a.mac||'—'}</td>
+              <td class="mtr-mono">${a.serial||'—'}</td>
+              <td>${a.usuario||'—'}</td>
+              <td>${a.modelo||'—'}</td>
+              <td class="mtr-time">${ls}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
 };
